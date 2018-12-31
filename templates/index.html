@@ -1,0 +1,127 @@
+<!--
+Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<title>7Eleven Fuel Locker</title>
+<!-- for-mobile-apps -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<!-- //for-mobile-apps -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link href="../static/css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<script>
+	$(document).ready(function(){
+		$("#buttonpressed").hide();
+		$("#manual").fadeOut("fast");
+	   $("#aauto").click(function(event){
+				$("#manual").hide();
+				$("#buttonpressed").hide();
+	      $("#automatic").fadeIn("fast");
+	   });
+	   $("#aman").click(function(event){
+	       $("#automatic").hide();
+				 $("#buttonpressed").hide();
+	       $("#manual").fadeIn("fast");
+	   });
+		 $(".btn").click(function(event){
+	       $("#automatic").hide();
+			   $("#manual").hide();
+			   $(".automanual").hide();
+	       $("#buttonpressed").fadeIn("fast");
+		 });
+	});
+</script>
+
+</head>
+<body>
+<!-- main -->
+<div class="audio-main w3ls">
+	<h1>7Eleven Fuel Locker</h1>
+	<div class="audio-record-list">
+	<div class="profile">
+			 <div class="profile-top wthree">
+				 <div class="pic-sec">
+                     {% if session['accountID'] %}
+                        <div class="pic">
+                             <img src="../static/images/7-eleven_logo.svg" alt=""/>
+                         </div>
+                         <div class="pic_info">
+                             <h2>Welcome, {{ session['firstName'] }}.</h2>
+                             <h3>Your current account balance is: <strong class='bold_balance'>${{ session['cardBalance'] }}.</strong></h3>
+														 {% if session['fuelLockActive'][0] %}
+                             <br><h4 class='bold_balance'>Current fuel lock:</h4>
+                             <h3>Fuel lock expires: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
+                             <h3>Can lock upto <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres.</h3>
+                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+														 {% endif %}
+														 {% if session['fuelLockActive'][1] %}
+                             <br><h4 class='bold_balance'>Previous fuel lock:</h4>
+                             <h3>Fuel lock expired: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
+                             <h3>Could have locked: <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres.</h3>
+                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+														 {% endif %}
+														 {% if session['fuelLockActive'][2] %}
+                             <br><h4 class='bold_balance'>Previous fuel lock:</h4>
+                             <h3>Redeemed: <strong class='bold_balance'>{{ session['fuelLockRedeemed'] }}</strong></h3>
+                             <h3>You locked in <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres.</h3>
+                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+														 {% endif %}
+                         </div>
+                         <div class="clear"></div>
+                     {% else %}
+                         <div class="pic">
+                              <img src="../static/images/7-eleven_logo.svg" alt=""/>
+                         </div>
+                         <div class="pic_info">
+                             <h2>Please enter your email and password below:<br><br></h2>
+														 <form class="form-inline mt-2 mt-md-0" action="/login" method="POST">
+															 <input class="form-control mr-sm-2" type="username" placeholder="" name="email"><br><br>
+															 <input class="form-control mr-sm-2" type="password" placeholder=""  name="password"><br><br>
+															 <button class="btn btn-lg btn-primary" type="submit" value="Login">Login</button>
+														 </form>
+                         </div>
+                         <div class="clear"></div>
+                     {% endif %}
+				 </div>
+				 <div class="media">
+					 {% if session['ErrorMessage'] %}
+					 	<h2>Oops, error:</h2>
+						<h3>{{ session['ErrorMessage'] }}</h3>
+						<h3><a href="?action=refresh">Refresh</a></h3>
+					 {% elif session['SuccessMessage'] %}
+					 	<h2>Success!!</h2>
+						<h3>{{ session['SuccessMessage'] }}</h3>
+						<h3><a href="?action=refresh">Refresh</a></h3>
+					 {% elif session['firstName'] %}
+
+					  {% if session['fuelLockActive'][0] %}
+						{% else %}
+							{% block content %}{% endblock %}
+						{% endif %}
+					 {% endif %}
+
+				 </div>
+			 </div>
+        {% if session['accountID'] %}
+            <div class="text-center">
+                <a href="/logout" class="text-danger">
+                    <span>LOGOUT</span> <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                </a>
+            </div>
+        {% endif %}
+		 </div>
+	</div>
+</div>
+<!-- //main -->
+
+</body>
+</html>
