@@ -192,8 +192,6 @@ def getKey(encryptedKey):
     i = i + 1
   return key
 
-# Generate a Device ID
-deviceID = ''.join(random.choice('0123456789abcdef') for i in range(15))
 # key is the OBFUSCATED_APP_ID
 key       = getKey([36, 132, 5, 129, 42, 105, 114, 152, 34, 137, 126, 125, 93, 11, 117, 200, 157, 243, 228, 226, 40, 210, 84, 134, 43, 56, 37, 144, 116, 137, 43, 45])
 # key2 is the OBFUSCATED_API_ID
@@ -229,6 +227,9 @@ def login():
         payload = '{"Email":"' + email + '","Password":"' + password + '","DeviceName":"HTC6525LVW","DeviceOsNameVersion":"Android 8.1.0"}'
         encrypteddata = base64.b64encode(hashlib.md5(payload).digest())
 
+        
+        # Generate a Device ID
+        deviceID = ''.join(random.choice('0123456789abcdef') for i in range(15))
         # The login URL and a current timestamp + UUID
         url       = "https://711-goodcall.api.tigerspike.com/api/v1/account/login"
         replace   = url.replace("https", "http").lower()
