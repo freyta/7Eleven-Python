@@ -122,8 +122,8 @@ def lockedPrices():
                'Authorization':'%s' % tssa,
                'X-OsVersion':'Android 8.1.0',
                'X-OsName':'Android',
-               'X-DeviceID':deviceID,
-               'X-AppVersion':'1.6.0.1967',
+               'X-DeviceID':session['deviceID'],
+               'X-AppVersion':'1.7.0.2009',
                'X-DeviceSecret':session['deviceSecret'],
                'Content-Type':'application/json; charset=utf-8'}
 
@@ -227,9 +227,9 @@ def login():
         payload = '{"Email":"' + email + '","Password":"' + password + '","DeviceName":"HTC6525LVW","DeviceOsNameVersion":"Android 8.1.0"}'
         encrypteddata = base64.b64encode(hashlib.md5(payload).digest())
 
-        
-        # Generate a Device ID
-        deviceID = ''.join(random.choice('0123456789abcdef') for i in range(15))
+
+        # Generate a Device ID. We store it in a session so that it is tied to each lockin
+        session['deviceID'] = ''.join(random.choice('0123456789abcdef') for i in range(15))
         # The login URL and a current timestamp + UUID
         url       = "https://711-goodcall.api.tigerspike.com/api/v1/account/login"
         replace   = url.replace("https", "http").lower()
@@ -246,8 +246,8 @@ def login():
                    'Authorization':'%s' % tssa,
                    'X-OsVersion':'Android 8.1.0',
                    'X-OsName':'Android',
-                   'X-DeviceID':deviceID,
-                   'X-AppVersion':'1.6.0.1967',
+                   'X-DeviceID':session['deviceID'],
+                   'X-AppVersion':'1.7.0.2009',
                    'Content-Type':'application/json; charset=utf-8'}
 
         response = requests.post(url, data=payload, headers=headers)
@@ -311,8 +311,8 @@ def logout():
                'Authorization':'%s' % tssa,
                'X-OsVersion':'Android 8.1.0',
                'X-OsName':'Android',
-               'X-DeviceID':deviceID,
-               'X-AppVersion':'1.6.0.1967',
+               'X-DeviceID':session['deviceID'],
+               'X-AppVersion':'1.7.0.2009',
                'X-DeviceSecret':session['deviceSecret'],
                'Content-Type':'application/json; charset=utf-8'}
 
@@ -382,8 +382,8 @@ def lockin():
                    'Authorization':'%s' % tssa,
                    'X-OsVersion':'Android 8.1.0',
                    'X-OsName':'Android',
-                   'X-DeviceID':deviceID,
-                   'X-AppVersion':'1.6.0.1967',
+                   'X-DeviceID':session['deviceID'],
+                   'X-AppVersion':'1.7.0.2009',
                    'X-DeviceSecret':session['deviceSecret'],
                    'Content-Type':'application/json; charset=utf-8'}
 
@@ -443,8 +443,8 @@ def lockin():
                    'Authorization':'%s' % tssa,
                    'X-OsVersion':'Android 8.1.0',
                    'X-OsName':'Android',
-                   'X-DeviceID':deviceID,
-                   'X-AppVersion':'1.6.0.1967',
+                   'X-DeviceID':session['deviceID'],
+                   'X-AppVersion':'1.7.0.2009',
                    'X-DeviceSecret':session['deviceSecret'],
                    'Content-Type':'application/json; charset=utf-8'}
 
