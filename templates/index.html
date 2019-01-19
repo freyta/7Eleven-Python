@@ -60,7 +60,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 														 {% if session['fuelLockActive'][0] %}
                              <br><h4 class='bold_balance'>Current fuel lock:</h4>
                              <h3>Fuel lock expires: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
-                             <h3>Can lock upto <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres.</h3>
+                             <h3>You have <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres locked in.</h3>
                              <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
 														 {% endif %}
 														 {% if session['fuelLockActive'][1] %}
