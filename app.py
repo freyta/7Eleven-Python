@@ -324,6 +324,8 @@ def logout():
 @app.route('/lockin',  methods=['POST', 'GET'])
 def lockin():
     if request.method == 'POST':
+        # Variable used to search for a manual price
+        priceOveride = False
 
         # Get the fuel type we want
         fuelType = str(request.form['fueltype'])
@@ -346,6 +348,8 @@ def lockin():
             location = locLat + "," + locLong
 
         elif(request.form['submit'] == "manual"):
+            # Since we have manually chosen a location, set priceOveride to true
+            priceOveride = True
             geocode_result = gmaps.geocode(str(request.form['postcode']) + ', Australia')
             locLat  = str(geocode_result[0]['geometry']['location']['lat'])
             locLong = str(geocode_result[0]['geometry']['location']['lng'])
@@ -413,12 +417,14 @@ def lockin():
                 if(str(i['Ean']) == fuelType):
                     LockinPrice = i['Price']
 
+        # If we have performed an automatic search we run the lowest price check
         # LockinPrice = the price from the 7/11 website
         # locationResult[1] = the price from the master131 script
         # If the price that we tried to lock in is more expensive than scripts price, we return an error
-        if not(float(LockinPrice) <= float(locationResult[1])):
-            session['ErrorMessage'] = "The fuel price is too high compared to the cheapest available. The cheapest we found was at " + locationResult[0] + ". Try locking in there!"
-            return redirect(url_for('index'))
+        if not(priceOveride):
+            if not(float(LockinPrice) <= float(locationResult[1])):
+                session['ErrorMessage'] = "The fuel price is too high compared to the cheapest available. The cheapest we found was at " + locationResult[0] + ". Try locking in there!"
+                return redirect(url_for('index'))
 
         # Now we want to lock in the maximum litres we can.
         NumberOfLitres = int(float(session['cardBalance']) / LockinPrice * 100)
