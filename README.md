@@ -4,7 +4,8 @@ What is this program? This is an extremely simple program to use that lets you l
 # Setup
 You will need to install the dependencies in requirements.txt, you can use pip as follows `pip install -r requirements.txt`
 
-You will also need a [Google Maps API key](https://developers.google.com/maps/documentation/embed/get-api-key ).
+You will also need a [Google Maps API key](https://developers.google.com/maps/documentation/embed/get-api-key), with the 'Geocoding API'
+ enabled.
 After you have a Google Maps API key you will need to edit line 22 of app.py replacing the word **changethis** with your API key.
 
 # Usage

@@ -60,7 +60,7 @@ select {
 }
 hr{
     border-top: 1px dotted;
-    color: rgba(255, 255, 255, 0.19);
+    color: rgb(255, 255, 255);
     margin: 10px;
     width: 200px;
 }
@@ -85,7 +85,7 @@ hr{
 .not_found{
     padding: 1em;
     margin-top: 1.5em;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgb(255, 255, 255);
 }
 .not_found_title{
     margin-bottom: 1.5em;
@@ -95,7 +95,7 @@ hr{
 .find_username_text{
 	display: none;
     margin-top: 0.5em;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgb(255, 255, 255);
     padding: 1em;
 }
 .find_username_text li {
@@ -189,7 +189,7 @@ hr{
     max-width: 70%;
 }
 .profile-top {
-    background: rgba(00, 80, 61);
+    background: rgb(00, 80, 61);
     padding: 1.5em;
 }
 .pic{
@@ -224,7 +224,7 @@ hr{
 .media{
 	margin-top:1em;
 	padding-top:1em;
-	border-top:1px solid rgba(255, 255, 255, 0.26);
+	border-top:1px solid rgb(255, 255, 255);
 }
 .media h2 {
     color: #fff;
@@ -526,7 +526,7 @@ transition:all 100ms ease;
 #plwrap { margin:0 auto; }
 #plList { margin:0; }
 #plList li { cursor:pointer; margin:0; padding:21px 0; }
-#plList li:hover { background-color: rgba(255,255,255,0.2); }
+#plList li:hover { background-color: rgb(255,255,255); }
 .plItem { position:relative; }
 .plTitle { left:50px; overflow:hidden; position:absolute; right:131px; text-overflow:ellipsis; top:0; white-space:nowrap; }
 .plNum { padding-left:21px; width:25px; }
