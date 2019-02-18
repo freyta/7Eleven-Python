@@ -339,27 +339,31 @@ def lockin():
         # Get the postcode and price of the cheapest fuel
         locationResult = cheapestFuel(fuelType)
 
+        # Get the form submission method
         submissionMethod = request.form['submit']
-        # If they have manually chosen a postcode/suburb set the price overide to true
-        if(submissionMethod == "manual"):
-            priceOveride = True
 
         # They tried to do something different from the manual and automatic form, so throw up an error
         if(submissionMethod != "manual" and submissionMethod != "automatic"):
             session['ErrorMessage'] = "Invalid form submission. Either use the manual or automatic one on the main page."
             return redirect(url_for('index'))
 
-        # If the fuel type is not within our boundaries (52 = E10, 58 = LPG) throw up an error
-        if(fuelType < "52" or fuelType > "58"):
-            session['ErrorMessage'] = "Invalid fuel type selected. Try again!"
-            return redirect(url_for('index'))
+        # If they have manually chosen a postcode/suburb set the price overide to true
+        if(submissionMethod == "manual"):
+                priceOveride = True
+                # Initiate the Google Maps API
+                gmaps = googlemaps.Client(key = gmapsAPIkey)
+                # Get the longitude and latitude from the submitted postcode
+                geocode_result = gmaps.geocode(str(request.form['postcode']) + ', Australia')
+                locLat  = geocode_result[0]['geometry']['location']['lat']
+                locLong = geocode_result[0]['geometry']['location']['lng']
+        else:
+            # It was an automatic submission so we will now get the coordinates of the store 
+            # and add a random value to it so we don't appear to lock in from the service station
+            locLat = locationResult[2]
+            locLat += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
 
-        # Get the coordinates of the store and add a random value to it so we don't appear to lock in from the service station
-        locLat = locationResult[2]
-        locLat += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
-
-        locLong = locationResult[3]
-        locLong += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+            locLong = locationResult[3]
+            locLong += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
 
         # Now we start the request header
         url       = "https://711-goodcall.api.tigerspike.com/api/v1/FuelLock/StartSession"
