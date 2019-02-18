@@ -99,9 +99,11 @@ def cheapestFuel(fueltype):
         fueltype = 0
 
     # Get the postcode and price
-    postcode = response['regions'][0]['prices'][fueltype]['postcode']
-    price = response['regions'][0]['prices'][fueltype]['price']
-    return postcode, price
+    postcode  = response['regions'][0]['prices'][fueltype]['postcode']
+    price     = response['regions'][0]['prices'][fueltype]['price']
+    latitude  = response['regions'][0]['prices'][fueltype]['lat']
+    longitude = response['regions'][0]['prices'][fueltype]['lng']
+    return postcode, price, latitude, longitude
 
 def lockedPrices():
     # This function is used for getting our locked in fuel prices to display on the main page
@@ -337,25 +339,13 @@ def lockin():
         # Get the postcode and price of the cheapest fuel
         locationResult = cheapestFuel(fuelType)
 
-        # Initiate the google maps API
-        gmaps = googlemaps.Client(key = gmapsAPIkey)
-
-        # Get the Latitude and Longitude from the postcode of the cheapest station
-        if(request.form['submit'] == "automatic"):
-            geocode_result = gmaps.geocode(str(locationResult[0]) + ', Australia')
-            locLat  = str(geocode_result[0]['geometry']['location']['lat'])
-            locLong = str(geocode_result[0]['geometry']['location']['lng'])
-            location = locLat + "," + locLong
-
-        elif(request.form['submit'] == "manual"):
-            # Since we have manually chosen a location, set priceOveride to true
+        submissionMethod = request.form['submit']
+        # If they have manually chosen a postcode/suburb set the price overide to true
+        if(submissionMethod == "manual"):
             priceOveride = True
-            geocode_result = gmaps.geocode(str(request.form['postcode']) + ', Australia')
-            locLat  = str(geocode_result[0]['geometry']['location']['lat'])
-            locLong = str(geocode_result[0]['geometry']['location']['lng'])
-            location = locLat + "," + locLong
-        else:
-            # They tried to do something different from the manual and automatic form, so throw up an error
+
+        # They tried to do something different from the manual and automatic form, so throw up an error
+        if(submissionMethod != "manual" and submissionMethod != "automatic"):
             session['ErrorMessage'] = "Invalid form submission. Either use the manual or automatic one on the main page."
             return redirect(url_for('index'))
 
@@ -364,6 +354,13 @@ def lockin():
             session['ErrorMessage'] = "Invalid fuel type selected. Try again!"
             return redirect(url_for('index'))
 
+        # Get the coordinates of the store and add a random value to it so we don't appear to lock in from the service station
+        locLat = locationResult[2]
+        locLat += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+
+        locLong = locationResult[3]
+        locLong += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+
         # Now we start the request header
         url       = "https://711-goodcall.api.tigerspike.com/api/v1/FuelLock/StartSession"
         replace   = url.replace("https", "http").lower()
@@ -371,7 +368,7 @@ def lockin():
         uuidVar   = str(uuid.uuid4())
 
         # The payload encrypted data
-        payload = '{"LastStoreUpdateTimestamp":' + str(timestamp) + ',"Latitude":"' + locLat + '","Longitude":"' + locLong + '"}'
+        payload = '{"LastStoreUpdateTimestamp":' + str(timestamp) + ',"Latitude":"' + str(locLat) + '","Longitude":"' + str(locLong) + '"}'
         encrypteddata = base64.b64encode(hashlib.md5(payload).digest())
 
         # Now we build the final string to encrypt
