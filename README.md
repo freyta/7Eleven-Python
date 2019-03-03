@@ -6,7 +6,7 @@ You will need to install the dependencies in requirements.txt, you can use pip a
 
 You will also need a [Google Maps API key](https://developers.google.com/maps/documentation/embed/get-api-key), with the 'Geocoding API'
  enabled.
-After you have a Google Maps API key you will need to edit line 41 of app.py replacing the word **changethis** with your API key.
+After you have a Google Maps API key you will need to edit line 42 of app.py replacing the word **changethis** with your API key.
 
 # Usage
 Very simple to use, run the program with either of the following commands `python2.7 app.py` or if you use Python2.7 by default `python app.py`. After you have started the program all you have to do is login with your 7-Eleven email and password, and click either automatic lock in or manually enter a postcode that you want to lock in from.

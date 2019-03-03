@@ -37,8 +37,10 @@ YOU ONLY NEED TO CHANGE THE
     ONE VARIABLE BELOW.
 TO GET AN API KEY FOLLOW THIS LINK
 https://developers.google.com/maps/documentation/embed/get-api-key
+AND ENABLE THE "Geocoding API"
 '''''''''''''''''''''''''''
-gmapsAPIkey = "changethis"
+API_KEY = "changethis"
+BASE_URL = "https://711-goodcall.api.tigerspike.com/api/v1/"
 
 
 
@@ -111,15 +113,10 @@ def lockedPrices():
     # Remove all of our previous error messages
     session.pop('ErrorMessage', None)
 
-    url       = "https://711-goodcall.api.tigerspike.com/api/v1/FuelLock/List"
-    replace   = url.replace("https", "http").lower()
-    timestamp = int(time.time())
-    uuidVar   = str(uuid.uuid4())
-    str3      = key + "GET" + replace + str(timestamp) + uuidVar
+    # Generate the tssa string
+    tssa = generateTssa(BASE_URL + "FuelLock/List", "GET", None, session['accessToken'])
 
-    signature = base64.b64encode(hmac.new(key2, str3, digestmod=hashlib.sha256).digest())
-    tssa = "tssa 4d53bce03ec34c0a911182d4c228ee6c:" + signature + ":" + uuidVar + ":" + str(timestamp) + ":" + session['accessToken']
-
+    # Assign the headers and then request the fuel prices.
     headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                'Authorization':'%s' % tssa,
                'X-OsVersion':'Android 8.1.0',
@@ -129,7 +126,7 @@ def lockedPrices():
                'X-DeviceSecret':session['deviceSecret'],
                'Content-Type':'application/json; charset=utf-8'}
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(BASE_URL + "FuelLock/List", headers=headers)
     returnContent = json.loads(response.content)
 
     # An error occours if we have never locked in a price before
@@ -178,7 +175,7 @@ def lockedPrices():
         return session['fuelLockId'], session['fuelLockStatus'], session['fuelLockType'], session['fuelLockCPL'], session['fuelLockLitres'], session['fuelLockExpiry'], session['fuelLockRedeemed']
 
 def getKey(encryptedKey):
-  # get the hex from the encrypted secret key and then split every 2nd character into an array row
+  # Get the hex from the encrypted secret key and then split every 2nd character into an array row
   hex_string = hashlib.sha1("om.sevenel").hexdigest()
   hex_array = [hex_string[i:i+2] for i in range(0,len(hex_string),2)]
 
@@ -193,6 +190,30 @@ def getKey(encryptedKey):
 
     i = i + 1
   return key
+
+# Generate the tssa string
+def generateTssa(URL, method, payload = None, accessToken = None):
+
+    # Replace the https URL with a http one and convert the URL to lowercase 
+    URL       = URL.replace("https", "http").lower()
+    # Get a timestamp and a UUID
+    timestamp = int(time.time())
+    uuidVar   = str(uuid.uuid4())
+    # Join the variables into 1 string
+    str3      = key + method + URL + str(timestamp) + uuidVar
+    # If we have a payload to encrypt, then we encrypt it and add it to str3
+    if(payload):
+        payload = base64.b64encode(hashlib.md5(payload).digest())
+        str3   += payload
+    signature = base64.b64encode(hmac.new(key2, str3, digestmod=hashlib.sha256).digest())
+
+    # Finish building the tssa string
+    tssa = "tssa 4d53bce03ec34c0a911182d4c228ee6c:" + signature + ":" + uuidVar + ":" + str(timestamp)
+    # If we have an access token append it to the tssa string
+    if(accessToken):
+        tssa += ":" + accessToken
+
+    return tssa
 
 # key is the OBFUSCATED_APP_ID
 key       = getKey([36, 132, 5, 129, 42, 105, 114, 152, 34, 137, 126, 125, 93, 11, 117, 200, 157, 243, 228, 226, 40, 210, 84, 134, 43, 56, 37, 144, 116, 137, 43, 45])
@@ -225,25 +246,14 @@ def login():
         password = str(request.form['password'])
         email = str(request.form['email'])
 
-        # The JSON payload to login and then we MD5 encrypt the string and then base64 encode it
+        # The payload that we use to login
         payload = '{"Email":"' + email + '","Password":"' + password + '","DeviceName":"HTC6525LVW","DeviceOsNameVersion":"Android 8.1.0"}'
-        encrypteddata = base64.b64encode(hashlib.md5(payload).digest())
-
-
         # Generate a Device ID. We store it in a session so that it is tied to each lockin
         session['deviceID'] = ''.join(random.choice('0123456789abcdef') for i in range(15))
-        # The login URL and a current timestamp + UUID
-        url       = "https://711-goodcall.api.tigerspike.com/api/v1/account/login"
-        replace   = url.replace("https", "http").lower()
-        timestamp = int(time.time())
-        uuidVar   = str(uuid.uuid4())
+        # Generate the tssa string
+        tssa = generateTssa(BASE_URL + "account/login", "POST", payload)
 
-        # Put all of the above data into one string and then encrypt it
-        str3      = key + "POST" + replace + str(timestamp) + uuidVar + encrypteddata
-        signature = base64.b64encode(hmac.new(key2, str3, digestmod=hashlib.sha256).digest())
-
-        tssa = "tssa 4d53bce03ec34c0a911182d4c228ee6c:" + signature + ":" + uuidVar + ":" + str(timestamp)
-
+        # Assign the headers
         headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                    'Authorization':'%s' % tssa,
                    'X-OsVersion':'Android 8.1.0',
@@ -252,7 +262,8 @@ def login():
                    'X-AppVersion':'1.7.0.2009',
                    'Content-Type':'application/json; charset=utf-8'}
 
-        response = requests.post(url, data=payload, headers=headers)
+        # Login now!
+        response = requests.post(BASE_URL + "account/login", data=payload, headers=headers)
 
         returnHeaders = response.headers
         returnContent = json.loads(response.text)
@@ -295,19 +306,7 @@ def logout():
 
     # The logout payload is an empty string but it is still needed
     payload = '""'
-    encrypteddata = base64.b64encode(hashlib.md5(payload).digest())
-
-    # The logout URL and a current timestamp + UUID
-    url       = "https://711-goodcall.api.tigerspike.com/api/v1/account/logout"
-    replace   = url.replace("https", "http").lower()
-    timestamp = int(time.time())
-    uuidVar   = str(uuid.uuid4())
-
-    # Put all of the above data into one string and then encrypt it
-    str3      = key + "POST" + replace + str(timestamp) + uuidVar + encrypteddata
-    signature = base64.b64encode(hmac.new(key2, str3, digestmod=hashlib.sha256).digest())
-
-    tssa = "tssa 4d53bce03ec34c0a911182d4c228ee6c:" + signature + ":" + uuidVar + ":" + str(timestamp) + ":" + session['accessToken']
+    tssa = generateTssa(BASE_URL + "account/logout", "POST", payload, session['accessToken'])
 
     headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                'Authorization':'%s' % tssa,
@@ -318,7 +317,7 @@ def logout():
                'X-DeviceSecret':session['deviceSecret'],
                'Content-Type':'application/json; charset=utf-8'}
 
-    response = requests.post(url, data=payload, headers=headers)
+    response = requests.post(BASE_URL + "account/logout", data=payload, headers=headers)
     # Clear all of the previously set session variables and then redirect to the index page
     session.clear()
     return redirect(url_for('index'))
@@ -351,13 +350,13 @@ def lockin():
         if(submissionMethod == "manual"):
                 priceOveride = True
                 # Initiate the Google Maps API
-                gmaps = googlemaps.Client(key = gmapsAPIkey)
+                gmaps = googlemaps.Client(key = API_KEY)
                 # Get the longitude and latitude from the submitted postcode
                 geocode_result = gmaps.geocode(str(request.form['postcode']) + ', Australia')
                 locLat  = geocode_result[0]['geometry']['location']['lat']
                 locLong = geocode_result[0]['geometry']['location']['lng']
         else:
-            # It was an automatic submission so we will now get the coordinates of the store 
+            # It was an automatic submission so we will now get the coordinates of the store
             # and add a random value to it so we don't appear to lock in from the service station
             locLat = locationResult[2]
             locLat += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
@@ -365,24 +364,11 @@ def lockin():
             locLong = locationResult[3]
             locLong += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
 
+        # The payload to start the lockin process.
+        payload = '{"LastStoreUpdateTimestamp":' + str(int(time.time())) + ',"Latitude":"' + str(locLat) + '","Longitude":"' + str(locLong) + '"}'
+        tssa = generateTssa(BASE_URL + "FuelLock/StartSession", "POST", payload, session['accessToken'])
+
         # Now we start the request header
-        url       = "https://711-goodcall.api.tigerspike.com/api/v1/FuelLock/StartSession"
-        replace   = url.replace("https", "http").lower()
-        timestamp = int(time.time())
-        uuidVar   = str(uuid.uuid4())
-
-        # The payload encrypted data
-        payload = '{"LastStoreUpdateTimestamp":' + str(timestamp) + ',"Latitude":"' + str(locLat) + '","Longitude":"' + str(locLong) + '"}'
-        encrypteddata = base64.b64encode(hashlib.md5(payload).digest())
-
-        # Now we build the final string to encrypt
-        str3 = key + "POST" + replace + str(timestamp) + uuidVar + encrypteddata
-        # And then we encrypt it all
-        signature = base64.b64encode(hmac.new(key2, str3, digestmod=hashlib.sha256).digest())
-
-        # Now we are all encrypted, lets move along!
-        tssa = "tssa " + key + ":" + signature + ":" + uuidVar + ":" + str(timestamp) + ":" + session['accessToken']
-
         headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                    'Authorization':'%s' % tssa,
                    'X-OsVersion':'Android 8.1.0',
@@ -393,7 +379,7 @@ def lockin():
                    'Content-Type':'application/json; charset=utf-8'}
 
         # Send the request
-        response = requests.post(url, data=payload, headers=headers)
+        response = requests.post(BASE_URL + "FuelLock/StartSession", data=payload, headers=headers)
 
         # Get the response content so we can check the fuel price
         returnContent = response.content
@@ -432,19 +418,7 @@ def lockin():
 
         # Lets start the actual lock in process
         payload = '{"AccountId":"' + session['accountID'] + '","FuelType":"' + fuelType + '","NumberOfLitres":"' + str(NumberOfLitres) + '"}'
-        encrypteddata = base64.b64encode(hashlib.md5(payload).digest())
-
-        url       = "https://711-goodcall.api.tigerspike.com/api/v1/FuelLock/Confirm"
-        replace   = url.replace("https", "http").lower()
-        timestamp = int(time.time())
-        uuidVar   = str(uuid.uuid4())
-        # Create a string from the above variables
-        str3      = key + "POST" + replace + str(timestamp) + uuidVar + encrypteddata
-
-        # And encrypt the string
-        signature = base64.b64encode(hmac.new(key2, str3, digestmod=hashlib.sha256).digest())
-
-        tssa = "tssa " + key + ":" + signature + ":" + uuidVar + ":" + str(timestamp) + ":" + session['accessToken']
+        tssa = generateTssa(BASE_URL + "FuelLock/Confirm", "POST", payload, session['accessToken'])
 
         headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                    'Authorization':'%s' % tssa,
@@ -456,7 +430,7 @@ def lockin():
                    'Content-Type':'application/json; charset=utf-8'}
 
         # Send through the request and get the response
-        response = requests.post(url, data=payload, headers=headers)
+        response = requests.post(BASE_URL + "FuelLock/Confirm", data=payload, headers=headers)
 
         # Get the respons einto a json array
         returnContent = json.loads(response.content)
@@ -490,4 +464,4 @@ def lockin():
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)
-    app.run(debug=True,host='0.0.0.0')
+    app.run()
