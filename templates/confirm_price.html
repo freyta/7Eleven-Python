@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% block content %}
+    <div class="confirm_price" align="center">
+        <form class="form-inline mt-2 mt-md-0"  action="/lockin" method="POST">
+            <div class="form-group">
+                <label for="fueltype">The price per litre will be ${{ session['LockinPrice'] }}.</label></br></br>
+                <button class="btn btn-default" name="submit" value="confirm_price" type="submit" onclick="loader.style.display = 'block'">Confirm the price!</button><br><br>
+                <h3><a href="./?action=refresh">Cancel lock in</a></h3>
+            </div>
+        </form>
+    </div>
+    <div id="buttonpressed">
+        <h2 align="center">Hold on tight!</h2>
+        <h3 align="center">I am currently attempting to lock in your fuel price. This may take a minute or so...</h3>
+    </div>
+{% endblock %}

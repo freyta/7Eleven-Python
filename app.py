@@ -194,7 +194,7 @@ def getKey(encryptedKey):
 # Generate the tssa string
 def generateTssa(URL, method, payload = None, accessToken = None):
 
-    # Replace the https URL with a http one and convert the URL to lowercase 
+    # Replace the https URL with a http one and convert the URL to lowercase
     URL       = URL.replace("https", "http").lower()
     # Get a timestamp and a UUID
     timestamp = int(time.time())
@@ -229,8 +229,11 @@ def index():
     if(request.args.get('action') == "refresh"):
         session.pop('ErrorMessage', None)
         session.pop('SuccessMessage', None)
+        session.pop('fuelType', None)
+        session.pop('LockinPrice', None)
+        lockedPrices()
 
-    # Get the cheapest fuel price to show on the automatic lockin page
+    # Get the cheapest fuel price to show on the automatic lock in page
     fuelPrice = cheapestFuelAll()
     return render_template('price.html')
 
@@ -241,6 +244,7 @@ def login():
     # Clear the error and success message
     session.pop('ErrorMessage', None)
     session.pop('SuccessMessage', None)
+    session.pop('fuelType', None)
 
     if request.method == 'POST':
         password = str(request.form['password'])
@@ -248,7 +252,7 @@ def login():
 
         # The payload that we use to login
         payload = '{"Email":"' + email + '","Password":"' + password + '","DeviceName":"HTC6525LVW","DeviceOsNameVersion":"Android 8.1.0"}'
-        # Generate a Device ID. We store it in a session so that it is tied to each lockin
+        # Generate a Device ID. We store it in a session so that it is tied to each lock in
         session['deviceID'] = ''.join(random.choice('0123456789abcdef') for i in range(15))
         # Generate the tssa string
         tssa = generateTssa(BASE_URL + "account/login", "POST", payload)
@@ -322,102 +326,125 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
+@app.route('/confirm')
+def confirm():
+
+    try:
+        if(session['LockinPrice']):
+            return render_template('confirm_price.html')
+    except:
+        session['ErrorMessage'] = "You haven't started the lock in process yet. Please try again."
+        return redirect(url_for('index'))
+
+
+
+
 @app.route('/lockin',  methods=['POST', 'GET'])
 def lockin():
     if request.method == 'POST':
         # Variable used to search for a manual price
         priceOveride = False
-
-        # Get the fuel type we want
-        fuelType = str(request.form['fueltype'])
-
-        # Clear previous messages
-        session.pop('ErrorMessage', None)
-        session.pop('SuccessMessage', None)
-
-        # Get the postcode and price of the cheapest fuel
-        locationResult = cheapestFuel(fuelType)
-
         # Get the form submission method
         submissionMethod = request.form['submit']
 
-        # They tried to do something different from the manual and automatic form, so throw up an error
-        if(submissionMethod != "manual" and submissionMethod != "automatic"):
-            session['ErrorMessage'] = "Invalid form submission. Either use the manual or automatic one on the main page."
-            return redirect(url_for('index'))
+        # If we didn't try to confirm a manual price
+        if(submissionMethod != "confirm_price"):
 
-        # If they have manually chosen a postcode/suburb set the price overide to true
-        if(submissionMethod == "manual"):
-                priceOveride = True
-                # Initiate the Google Maps API
-                gmaps = googlemaps.Client(key = API_KEY)
-                # Get the longitude and latitude from the submitted postcode
-                geocode_result = gmaps.geocode(str(request.form['postcode']) + ', Australia')
-                locLat  = geocode_result[0]['geometry']['location']['lat']
-                locLong = geocode_result[0]['geometry']['location']['lng']
-        else:
-            # It was an automatic submission so we will now get the coordinates of the store
-            # and add a random value to it so we don't appear to lock in from the service station
-            locLat = locationResult[2]
-            locLat += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+            # Get the fuel type we want
+            fuelType = str(request.form['fueltype'])
+            session['fuelType'] = fuelType
 
-            locLong = locationResult[3]
-            locLong += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+            # Clear previous messages
+            session.pop('ErrorMessage', None)
+            session.pop('SuccessMessage', None)
 
-        # The payload to start the lockin process.
-        payload = '{"LastStoreUpdateTimestamp":' + str(int(time.time())) + ',"Latitude":"' + str(locLat) + '","Longitude":"' + str(locLong) + '"}'
-        tssa = generateTssa(BASE_URL + "FuelLock/StartSession", "POST", payload, session['accessToken'])
+            # Get the postcode and price of the cheapest fuel
+            locationResult = cheapestFuel(fuelType)
 
-        # Now we start the request header
-        headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
-                   'Authorization':'%s' % tssa,
-                   'X-OsVersion':'Android 8.1.0',
-                   'X-OsName':'Android',
-                   'X-DeviceID':session['deviceID'],
-                   'X-AppVersion':'1.7.0.2009',
-                   'X-DeviceSecret':session['deviceSecret'],
-                   'Content-Type':'application/json; charset=utf-8'}
-
-        # Send the request
-        response = requests.post(BASE_URL + "FuelLock/StartSession", data=payload, headers=headers)
-
-        # Get the response content so we can check the fuel price
-        returnContent = response.content
-
-        # Move the response json into an array so we can read it
-        returnContent = json.loads(returnContent)
-        # Get the store number - I don't think we need this, so I have commented it out!
-        #storeNumber = returnContent['CheapestFuelTypeStores'][0]['StoreNumber']
-
-        # If there is a fuel lock already in place we get an error!
-        try:
-          if returnContent['ErrorType'] == 0:
-              session['ErrorMessage'] = "An error has occured. This is most likely due to a fuel lock already being in place."
-              return redirect(url_for('index'))
-        except:
-            pass
-
-        # Get the fuel price of all the types of fuel
-        for each in returnContent['CheapestFuelTypeStores']:
-            x = each['FuelPrices']
-            for i in x:
-                if(str(i['Ean']) == fuelType):
-                    LockinPrice = i['Price']
-
-        # If we have performed an automatic search we run the lowest price check
-        # LockinPrice = the price from the 7/11 website
-        # locationResult[1] = the price from the master131 script
-        # If the price that we tried to lock in is more expensive than scripts price, we return an error
-        if not(priceOveride):
-            if not(float(LockinPrice) <= float(locationResult[1])):
-                session['ErrorMessage'] = "The fuel price is too high compared to the cheapest available. The cheapest we found was at " + locationResult[0] + ". Try locking in there!"
+            # They tried to do something different from the manual and automatic form, so throw up an error
+            if(submissionMethod != "manual" and submissionMethod != "automatic"):
+                session['ErrorMessage'] = "Invalid form submission. Either use the manual or automatic one on the main page."
                 return redirect(url_for('index'))
 
+            # If they have manually chosen a postcode/suburb set the price overide to true
+            if(submissionMethod == "manual"):
+                    priceOveride = True
+                    # Initiate the Google Maps API
+                    gmaps = googlemaps.Client(key = API_KEY)
+                    # Get the longitude and latitude from the submitted postcode
+                    geocode_result = gmaps.geocode(str(request.form['postcode']) + ', Australia')
+                    locLat  = geocode_result[0]['geometry']['location']['lat']
+                    locLong = geocode_result[0]['geometry']['location']['lng']
+            else:
+                # It was an automatic submission so we will now get the coordinates of the store
+                # and add a random value to it so we don't appear to lock in from the service station
+                locLat = locationResult[2]
+                locLat += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+
+                locLong = locationResult[3]
+                locLong += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+
+            # The payload to start the lock in process.
+            payload = '{"LastStoreUpdateTimestamp":' + str(int(time.time())) + ',"Latitude":"' + str(locLat) + '","Longitude":"' + str(locLong) + '"}'
+            tssa = generateTssa(BASE_URL + "FuelLock/StartSession", "POST", payload, session['accessToken'])
+
+            # Now we start the request header
+            headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
+                       'Authorization':'%s' % tssa,
+                       'X-OsVersion':'Android 8.1.0',
+                       'X-OsName':'Android',
+                       'X-DeviceID':session['deviceID'],
+                       'X-AppVersion':'1.7.0.2009',
+                       'X-DeviceSecret':session['deviceSecret'],
+                       'Content-Type':'application/json; charset=utf-8'}
+
+            # Send the request
+            response = requests.post(BASE_URL + "FuelLock/StartSession", data=payload, headers=headers)
+
+            # Get the response content so we can check the fuel price
+            returnContent = response.content
+
+            # Move the response json into an array so we can read it
+            returnContent = json.loads(returnContent)
+            # Get the store number - I don't think we need this, so I have commented it out!
+            #storeNumber = returnContent['CheapestFuelTypeStores'][0]['StoreNumber']
+
+            # If there is a fuel lock already in place we get an error!
+            try:
+              if returnContent['ErrorType'] == 0:
+                  session['ErrorMessage'] = "An error has occured. This is most likely due to a fuel lock already being in place."
+                  return redirect(url_for('index'))
+            except:
+                pass
+
+            # Get the fuel price of all the types of fuel
+            for each in returnContent['CheapestFuelTypeStores']:
+                x = each['FuelPrices']
+                for i in x:
+                    if(str(i['Ean']) == fuelType):
+                        LockinPrice = i['Price']
+                        session['LockinPrice'] = LockinPrice
+
+            # If we have performed an automatic search we run the lowest price check
+            # LockinPrice = the price from the 7/11 website
+            # locationResult[1] = the price from the master131 script
+            # If the price that we tried to lock in is more expensive than scripts price, we return an error
+            if not(priceOveride):
+                if not(float(LockinPrice) <= float(locationResult[1])):
+                    session['ErrorMessage'] = "The fuel price is too high compared to the cheapest available. The cheapest we found was at " + locationResult[0] + ". Try locking in there!"
+                    return redirect(url_for('index'))
+
+            if(priceOveride):
+                return redirect(url_for('confirm'))
+
         # Now we want to lock in the maximum litres we can.
-        NumberOfLitres = int(float(session['cardBalance']) / LockinPrice * 100)
+        NumberOfLitres = int(float(session['cardBalance']) / session['LockinPrice'] * 100)
 
         # Lets start the actual lock in process
-        payload = '{"AccountId":"' + session['accountID'] + '","FuelType":"' + fuelType + '","NumberOfLitres":"' + str(NumberOfLitres) + '"}'
+        payload = '{"AccountId":"' + session['accountID'] + '","FuelType":"' + session['fuelType'] + '","NumberOfLitres":"' + str(NumberOfLitres) + '"}'
+        # Pop our fueltype and lock in price variables
+        session.pop('fuelType', None)
+        session.pop('LockinPrice', None)
         tssa = generateTssa(BASE_URL + "FuelLock/Confirm", "POST", payload, session['accessToken'])
 
         headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
@@ -432,7 +459,7 @@ def lockin():
         # Send through the request and get the response
         response = requests.post(BASE_URL + "FuelLock/Confirm", data=payload, headers=headers)
 
-        # Get the respons einto a json array
+        # Get the response into a json array
         returnContent = json.loads(response.content)
         try:
             # Check if the response was an error message
@@ -446,19 +473,19 @@ def lockin():
                 lockedPrices()
                 # Get amoount of litres that was locked in from the returned JSON array
                 session['TotalLitres'] = returnContent['TotalLitres']
-                session['SuccessMessage'] = "The price was locked in for " + str(LockinPrice) + " cents per litre"
+                session['SuccessMessage'] = "The price was locked in for " + str(session['LockinPrice']) + " cents per litre"
                 return redirect(url_for('index'))
 
-        # For whatever reason it saved our lockin anyway and return to the index page
+        # For whatever reason it saved our lock in anyway and return to the index page
         except:
             # Update the fuel prices that are locked in
             lockedPrices()
-            session['SuccessMessage'] = "The price was locked in for " + str(LockinPrice) + " cents per litre"
+            session['SuccessMessage'] = "The price was locked in for " + str(session['LockinPrice']) + " cents per litre"
             # Get amoount of litres that was locked in from the returned JSON array
             session['TotalLitres'] = returnContent['TotalLitres']
             return redirect(url_for('index'))
     else:
-        # They just tried to load the lockin page without sending any data
+        # They just tried to load the lock in page without sending any data
         session['ErrorMessage'] = "Unknown error occured. Please try again!"
         return redirect(url_for('index'))
 
