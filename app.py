@@ -193,7 +193,7 @@ def getStores():
 
 def getStoreAddress(storePostcode):
     # Open the stores.json file and read it as a JSON file
-    with open('stores.json', 'r') as f:
+    with open('./stores.json', 'r') as f:
         stores = json.load(f)
 
     # For each store in "Diffs" read the postcode
@@ -542,7 +542,7 @@ def lockin():
 if __name__ == '__main__':
     # Try and open stores.json
     if(os.path.isfile('./stores.json')):
-        with open('stores.json', 'r') as f:
+        with open('./stores.json', 'r') as f:
             try:
                 stores = json.load(f)
             except:
@@ -551,16 +551,16 @@ if __name__ == '__main__':
             # Check to see if the stores.json file is older than 1 week.
             # If it is, we will download a new version
             if(stores['AsOfDate'] < (time.time() - (60 * 60 * 24 * 7))):
-                with open('stores.json', 'w') as f:
+                with open('./stores.json', 'w') as f:
                     f.write(getStores())
         except:
             # Our json file isn't what we expected, so we will download a new one.
-            with open('stores.json', 'w') as f:
+            with open('./stores.json', 'w') as f:
                 f.write(getStores())
 
     else:
         # We have no stores.json file, so we wil download it
-        with open('stores.json', 'w+') as f:
+        with open('./stores.json', 'w+') as f:
             f.write(getStores())
 
     app.secret_key = os.urandom(12)
