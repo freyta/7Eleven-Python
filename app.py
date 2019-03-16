@@ -442,9 +442,7 @@ def lockin():
 
         # Lets start the actual lock in process
         payload = '{"AccountId":"' + session['accountID'] + '","FuelType":"' + session['fuelType'] + '","NumberOfLitres":"' + str(NumberOfLitres) + '"}'
-        # Pop our fueltype and lock in price variables
-        session.pop('fuelType', None)
-        session.pop('LockinPrice', None)
+
         tssa = generateTssa(BASE_URL + "FuelLock/Confirm", "POST", payload, session['accessToken'])
 
         headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
@@ -474,6 +472,10 @@ def lockin():
                 # Get amoount of litres that was locked in from the returned JSON array
                 session['TotalLitres'] = returnContent['TotalLitres']
                 session['SuccessMessage'] = "The price was locked in for " + str(session['LockinPrice']) + " cents per litre"
+
+                # Pop our fueltype and lock in price variables
+                session.pop('fuelType', None)
+                session.pop('LockinPrice', None)
                 return redirect(url_for('index'))
 
         # For whatever reason it saved our lock in anyway and return to the index page
@@ -483,6 +485,10 @@ def lockin():
             session['SuccessMessage'] = "The price was locked in for " + str(session['LockinPrice']) + " cents per litre"
             # Get amoount of litres that was locked in from the returned JSON array
             session['TotalLitres'] = returnContent['TotalLitres']
+
+            # Pop our fueltype and lock in price variables
+            session.pop('fuelType', None)
+            session.pop('LockinPrice', None)
             return redirect(url_for('index'))
     else:
         # They just tried to load the lock in page without sending any data
