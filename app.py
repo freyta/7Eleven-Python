@@ -174,6 +174,36 @@ def lockedPrices():
 
         return session['fuelLockId'], session['fuelLockStatus'], session['fuelLockType'], session['fuelLockCPL'], session['fuelLockLitres'], session['fuelLockExpiry'], session['fuelLockRedeemed']
 
+def getStores():
+    # Get a list of all of the stores and their features from the 7-Eleven server.
+    # We will use this for our coordinates for a manual lock in
+    tssa = generateTssa(BASE_URL + "store/StoresAfterDateTime/1001", "GET")
+    deviceID = ''.join(random.choice('0123456789abcdef') for i in range(15))
+    # Assign the headers
+    headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
+               'Authorization':'%s' % tssa,
+               'X-OsVersion':'Android 8.1.0',
+               'X-OsName':'Android',
+               'X-DeviceID':deviceID,
+               'X-AppVersion':'1.7.0.2009',
+               'Content-Type':'application/json; charset=utf-8'}
+
+    response = requests.get(BASE_URL + "store/StoresAfterDateTime/1001", headers=headers)
+    return response.content
+
+def getStoreAddress(storePostcode):
+    # Open the stores.json file and read it as a JSON file
+    with open('stores.json', 'r') as f:
+        stores = json.load(f)
+
+    # For each store in "Diffs" read the postcode
+    for store in stores['Diffs']:
+        #print store['PostCode']
+        if(store['PostCode'] == storePostcode):
+            # Since we have a match, return the latitude + longitude of our store
+            return str(store['Latitude']), str(store['Longitude'])
+
+
 def getKey(encryptedKey):
   # Get the hex from the encrypted secret key and then split every 2nd character into an array row
   hex_string = hashlib.sha1("om.sevenel").hexdigest()
@@ -216,9 +246,12 @@ def generateTssa(URL, method, payload = None, accessToken = None):
     return tssa
 
 # key is the OBFUSCATED_APP_ID
-key       = getKey([36, 132, 5, 129, 42, 105, 114, 152, 34, 137, 126, 125, 93, 11, 117, 200, 157, 243, 228, 226, 40, 210, 84, 134, 43, 56, 37, 144, 116, 137, 43, 45])
+key       = getKey([36, 132, 5, 129, 42, 105, 114, 152, 34, 137, 126, 125, 93, 11, 117, 200, 157, 243,
+                    228, 226, 40, 210, 84, 134, 43, 56, 37, 144, 116, 137, 43, 45])
 # key2 is the OBFUSCATED_API_ID
-key2      = base64.b64decode(getKey([81, 217, 3, 192, 45, 88, 67, 253, 91, 164, 110, 13, 28, 57, 22, 225, 246, 233, 153, 224, 87, 152, 65, 253, 2, 115, 83, 197, 64, 156, 94, 41, 25, 27, 116, 153, 150, 161, 188, 166, 113, 130, 83, 143]))
+key2      = base64.b64decode(getKey([81, 217, 3, 192, 45, 88, 67, 253, 91, 164, 110, 13, 28, 57, 22, 225,
+                                     246, 233, 153, 224, 87, 152, 65, 253, 2, 115, 83, 197, 64, 156, 94,
+                                     41, 25, 27, 116, 153, 150, 161, 188, 166, 113, 130, 83, 143]))
 # The current time
 timeNow = int(time.time())
 
@@ -368,7 +401,18 @@ def lockin():
 
             # If they have manually chosen a postcode/suburb set the price overide to true
             if(submissionMethod == "manual"):
-                    priceOveride = True
+                postcode = str(request.form['postcode'])
+                priceOveride = True
+                # Get the latitude and longitude from the store
+                storeLatLng = getStoreAddress(postcode)
+                # If we have a match, set the coordinates. If we don't, use Google Maps
+                if (storeLatLng):
+                    locLat = float(storeLatLng[0])
+                    locLat += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+
+                    locLong = float(storeLatLng[1])
+                    locLong += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
+                else:
                     # Initiate the Google Maps API
                     gmaps = googlemaps.Client(key = API_KEY)
                     # Get the longitude and latitude from the submitted postcode
@@ -496,5 +540,28 @@ def lockin():
         return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    # Try and open stores.json
+    if(os.path.isfile('./stores.json')):
+        with open('stores.json', 'r') as f:
+            try:
+                stores = json.load(f)
+            except:
+                pass
+        try:
+            # Check to see if the stores.json file is older than 1 week.
+            # If it is, we will download a new version
+            if(stores['AsOfDate'] < (time.time() - (60 * 60 * 24 * 7))):
+                with open('stores.json', 'w') as f:
+                    f.write(getStores())
+        except:
+            # Our json file isn't what we expected, so we will download a new one.
+            with open('stores.json', 'w') as f:
+                f.write(getStores())
+
+    else:
+        # We have no stores.json file, so we wil download it
+        with open('stores.json', 'w+') as f:
+            f.write(getStores())
+
     app.secret_key = os.urandom(12)
-    app.run()
+    app.run(host='0.0.0.0')
