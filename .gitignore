@@ -1,3 +1,6 @@
 *.pyc
 *.pyo
 *.json
+
+# local config
+.env
