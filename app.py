@@ -42,7 +42,7 @@ BASE_URL = os.getenv('BASE_URL',settings.BASE_URL)
 PRICE_URL = os.getenv('PRICE_URL',settings.PRICE_URL)
 
 if(API_KEY in [None,"changethis",""]):
-    sys.exit("ERROR: API_KEY is not set correctly.\nPlease set it in the .env or as an environment variable.")
+    sys.exit("ERROR: API_KEY is not set correctly.\nPlease set it in the settings.py or as an environment variable.")
 
 
 def cheapestFuelAll():
