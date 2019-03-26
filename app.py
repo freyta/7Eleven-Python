@@ -31,17 +31,15 @@ import json
 import random
 import datetime
 import googlemaps
-
-from dotenv import load_dotenv,find_dotenv
-load_dotenv(find_dotenv(usecwd=True))
+import settings
 
 '''''''''''''''''''''''''''
 
 Set API_KEY in the .env file
 '''''''''''''''''''''''''''
-API_KEY = os.getenv("API_KEY")
-BASE_URL = os.getenv("BASE_URL","https://711-goodcall.api.tigerspike.com/api/v1/")
-PRICE_URL = os.getenv("PRICE_URL","https://projectzerothree.info/api.php?format=json")
+API_KEY = os.getenv('API_KEY',settings.API_KEY)
+BASE_URL = os.getenv('BASE_URL',settings.BASE_URL)
+PRICE_URL = os.getenv('PRICE_URL',settings.PRICE_URL)
 
 if(API_KEY in [None,"changethis",""]):
     sys.exit("ERROR: API_KEY is not set correctly.\nPlease set it in the .env or as an environment variable.")

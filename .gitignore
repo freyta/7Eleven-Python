@@ -3,4 +3,4 @@
 *.json
 
 # local config
-.env
+settings.py
