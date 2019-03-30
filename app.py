@@ -19,6 +19,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
+import sys
 import os
 import hashlib
 import hmac
@@ -30,24 +31,24 @@ import json
 import random
 import datetime
 import googlemaps
+import settings
 
 '''''''''''''''''''''''''''
 
-YOU ONLY NEED TO CHANGE THE
-    ONE VARIABLE BELOW.
-TO GET AN API KEY FOLLOW THIS LINK
-https://developers.google.com/maps/documentation/embed/get-api-key
-AND ENABLE THE "Geocoding API"
+Set API_KEY in the .env file
 '''''''''''''''''''''''''''
-API_KEY = "changethis"
-BASE_URL = "https://711-goodcall.api.tigerspike.com/api/v1/"
+API_KEY = os.getenv('API_KEY',settings.API_KEY)
+BASE_URL = os.getenv('BASE_URL',settings.BASE_URL)
+PRICE_URL = os.getenv('PRICE_URL',settings.PRICE_URL)
 
+if(API_KEY in [None,"changethis",""]):
+    sys.exit("ERROR: API_KEY is not set correctly.\nPlease set it in the settings.py or as an environment variable.")
 
 
 def cheapestFuelAll():
     # Just a quick way to get fuel prices from a website that is already created.
     # Thank you to master131 for this.
-    r = requests.get("https://projectzerothree.info/api.php?format=json")
+    r = requests.get(PRICE_URL)
     response = json.loads(r.text)
 
     # E10
@@ -77,7 +78,7 @@ def cheapestFuelAll():
 def cheapestFuel(fueltype):
     # Gets the cheapest fuel price for a certain type of fuel and the postcode
     # This is used for the automatic lock in
-    r = requests.get("https://projectzerothree.info/api.php?format=json")
+    r = requests.get(PRICE_URL)
     response = json.loads(r.text)
     '''
     52 = Unleaded 91
