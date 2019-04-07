@@ -34,13 +34,16 @@ import googlemaps
 import settings
 
 '''''''''''''''''''''''''''
-
-Set API_KEY in the .env file
+Set API_KEY in the settings.py file
 '''''''''''''''''''''''''''
 API_KEY = os.getenv('API_KEY',settings.API_KEY)
 BASE_URL = os.getenv('BASE_URL',settings.BASE_URL)
 PRICE_URL = os.getenv('PRICE_URL',settings.PRICE_URL)
+DEVICE_NAME = os.getenv('DEVICE_NAME', settings.DEVICE_NAME)
+OS_VERSION = os.getenv('DEVICE_NAME', settings.OS_VERSION)
+APP_VERSION = os.getenv('DEVICE_NAME', settings.APP_VERSION)
 
+# If we haven't set the API key or it is it's default value, quit the program
 if(API_KEY in [None,"changethis",""]):
     sys.exit("ERROR: API_KEY is not set correctly.\nPlease set it in the settings.py or as an environment variable.")
 
@@ -120,10 +123,10 @@ def lockedPrices():
     # Assign the headers and then request the fuel prices.
     headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                'Authorization':'%s' % tssa,
-               'X-OsVersion':'Android 8.1.0',
+               'X-OsVersion':OS_VERSION,
                'X-OsName':'Android',
                'X-DeviceID':session['deviceID'],
-               'X-AppVersion':'1.7.0.2009',
+               'X-AppVersion':APP_VERSION,
                'X-DeviceSecret':session['deviceSecret'],
                'Content-Type':'application/json; charset=utf-8'}
 
@@ -183,10 +186,10 @@ def getStores():
     # Assign the headers
     headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                'Authorization':'%s' % tssa,
-               'X-OsVersion':'Android 8.1.0',
+               'X-OsVersion':OS_VERSION,
                'X-OsName':'Android',
                'X-DeviceID':deviceID,
-               'X-AppVersion':'1.7.0.2009',
+               'X-AppVersion':APP_VERSION,
                'Content-Type':'application/json; charset=utf-8'}
 
     response = requests.get(BASE_URL + "store/StoresAfterDateTime/1001", headers=headers)
@@ -285,7 +288,8 @@ def login():
         email = str(request.form['email'])
 
         # The payload that we use to login
-        payload = '{"Email":"' + email + '","Password":"' + password + '","DeviceName":"HTC6525LVW","DeviceOsNameVersion":"Android 8.1.0"}'
+        payload = '{"Email":"' + email + '","Password":"' + password + '","DeviceName":"' + DEVICE_NAME + '","DeviceOsNameVersion":"' + OS_VERSION +'"}'
+
         # Generate a Device ID. We store it in a session so that it is tied to each lock in
         session['deviceID'] = ''.join(random.choice('0123456789abcdef') for i in range(15))
         # Generate the tssa string
@@ -294,10 +298,10 @@ def login():
         # Assign the headers
         headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                    'Authorization':'%s' % tssa,
-                   'X-OsVersion':'Android 8.1.0',
+                   'X-OsVersion':OS_VERSION,
                    'X-OsName':'Android',
                    'X-DeviceID':session['deviceID'],
-                   'X-AppVersion':'1.7.0.2009',
+                   'X-AppVersion':APP_VERSION,
                    'Content-Type':'application/json; charset=utf-8'}
 
         # Login now!
@@ -348,10 +352,10 @@ def logout():
 
     headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                'Authorization':'%s' % tssa,
-               'X-OsVersion':'Android 8.1.0',
+               'X-OsVersion':OS_VERSION,
                'X-OsName':'Android',
                'X-DeviceID':session['deviceID'],
-               'X-AppVersion':'1.7.0.2009',
+               'X-AppVersion':APP_VERSION,
                'X-DeviceSecret':session['deviceSecret'],
                'Content-Type':'application/json; charset=utf-8'}
 
@@ -436,10 +440,10 @@ def lockin():
             # Now we start the request header
             headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                        'Authorization':'%s' % tssa,
-                       'X-OsVersion':'Android 8.1.0',
+                       'X-OsVersion':OS_VERSION,
                        'X-OsName':'Android',
                        'X-DeviceID':session['deviceID'],
-                       'X-AppVersion':'1.7.0.2009',
+                       'X-AppVersion':APP_VERSION,
                        'X-DeviceSecret':session['deviceSecret'],
                        'Content-Type':'application/json; charset=utf-8'}
 
@@ -492,10 +496,10 @@ def lockin():
 
         headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                    'Authorization':'%s' % tssa,
-                   'X-OsVersion':'Android 8.1.0',
+                   'X-OsVersion':OS_VERSION,
                    'X-OsName':'Android',
                    'X-DeviceID':session['deviceID'],
-                   'X-AppVersion':'1.7.0.2009',
+                   'X-AppVersion':APP_VERSION,
                    'X-DeviceSecret':session['deviceSecret'],
                    'Content-Type':'application/json; charset=utf-8'}
 
