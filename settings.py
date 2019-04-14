@@ -4,7 +4,7 @@
 # Open the following URL (https://developers.google.com/maps/documentation/embed/get-api-key) to obtain a private API key
 # Ensure you have enabled the "Geocoding API"
 
-API_KEY="1"
+API_KEY=""
 
 # BASE_URL: 7-11 Mobile Application API End Point
 BASE_URL="https://711-goodcall.api.tigerspike.com/api/v1/"
