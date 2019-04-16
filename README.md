@@ -16,17 +16,17 @@ Clone the Git repo to your Docker host and build the image:
 
 Then run the image in a container:
 
-`docker run -d \
-  -e API_KEY=YOUR_GOOGLE_API_KEY \
-  -p 5000:5000 \
-  fuellock`
+<pre><code>docker run -d \<br />
+  -e API_KEY=YOUR_GOOGLE_API_KEY \<br />
+  -p 5000:5000 \<br />
+  fuellock<br /></code></pre>
 
 And browse to http://[Docker host IP]:5000
 
 Other environment variables you can specify at runtime:
   
-  `BASE_URL`: The URL for the 7-Eleven API.
-  `PRICE_URL`: The URL for the fuel price API (currently defaults to the API at projectzerothree.info)
-  `DEVICE_NAME`: The name of the device reported on login to the 7-Eleven API (set by default in settings.py)
-  `OS_VERSION`: The Android OS version reported on login to the 7-Eleven API (set by default in settings.py)
-  `APP_VERSION`: The 7-Eleven app version reported on login to the 7-Eleven API (set by default in settings.py)
+`BASE_URL`: The URL for the 7-Eleven API.<br />
+`PRICE_URL`: The URL for the fuel price API (currently defaults to the API at projectzerothree.info)<br />
+`DEVICE_NAME`: The name of the device reported on login to the 7-Eleven API (set by default in settings.py)<br />
+`OS_VERSION`: The Android OS version reported on login to the 7-Eleven API (set by default in settings.py)<br />
+`APP_VERSION`: The 7-Eleven app version reported on login to the 7-Eleven API (set by default in settings.py)

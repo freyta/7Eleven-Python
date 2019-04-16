@@ -40,8 +40,8 @@ API_KEY = os.getenv('API_KEY',settings.API_KEY)
 BASE_URL = os.getenv('BASE_URL',settings.BASE_URL)
 PRICE_URL = os.getenv('PRICE_URL',settings.PRICE_URL)
 DEVICE_NAME = os.getenv('DEVICE_NAME', settings.DEVICE_NAME)
-OS_VERSION = os.getenv('DEVICE_NAME', settings.OS_VERSION)
-APP_VERSION = os.getenv('DEVICE_NAME', settings.APP_VERSION)
+OS_VERSION = os.getenv('OS_VERSION', settings.OS_VERSION)
+APP_VERSION = os.getenv('APP_VERSION', settings.APP_VERSION)
 
 # If we haven't set the API key or it is it's default value, quit the program
 if(API_KEY in [None,"changethis",""]):
