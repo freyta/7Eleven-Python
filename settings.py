@@ -4,6 +4,10 @@
 # Open the following URL (https://developers.google.com/maps/documentation/embed/get-api-key) to obtain a private API key
 # Ensure you have enabled the "Geocoding API"
 
+# The API_KEY is not needed as much anymore. It is only needed if you do not have a stores.json file where your script
+# is running from. But it should be automatically downloaded on first run anyway. The stores.json file is used to
+# determine the location of a 7Eleven stores and lock in around that area.
+
 API_KEY=""
 
 # BASE_URL: 7-11 Mobile Application API End Point
