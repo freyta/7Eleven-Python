@@ -226,6 +226,9 @@ def getKey(encryptedKey):
   return key
 
 # Generate the tssa string
+# Found in au.com.seveneleven.y.h - hard coded for now
+encryption_key = base64.b64decode("g2JZ9nYmS3EhNiVTWyG5xbqGsqq4QFiNi6GLLbVhRbw=")
+
 def generateTssa(URL, method, payload = None, accessToken = None):
 
     # Replace the https URL with a http one and convert the URL to lowercase
@@ -234,15 +237,15 @@ def generateTssa(URL, method, payload = None, accessToken = None):
     timestamp = int(time.time())
     uuidVar   = str(uuid.uuid4())
     # Join the variables into 1 string
-    str3      = key + method + URL + str(timestamp) + uuidVar
+    str3      = "yvktroj08t9jltr3ze0isf7r4wygb39s" + method + URL + str(timestamp) + uuidVar
     # If we have a payload to encrypt, then we encrypt it and add it to str3
     if(payload):
         payload = base64.b64encode(hashlib.md5(payload).digest())
         str3   += payload
-    signature = base64.b64encode(hmac.new(key2, str3, digestmod=hashlib.sha256).digest())
-
+    signature = base64.b64encode(hmac.new(encryption_key, str3, digestmod=hashlib.sha256).digest())
     # Finish building the tssa string
-    tssa = "tssa 4d53bce03ec34c0a911182d4c228ee6c:" + signature + ":" + uuidVar + ":" + str(timestamp)
+    tssa = "tssa yvktroj08t9jltr3ze0isf7r4wygb39s:" + signature + ":" + uuidVar + ":" + str(timestamp)
+    print tssa
     # If we have an access token append it to the tssa string
     if(accessToken):
         tssa += ":" + accessToken
