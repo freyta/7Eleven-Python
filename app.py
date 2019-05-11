@@ -225,6 +225,9 @@ def getKey():
     return key
 
 # Generate the tssa string
+# Found in au.com.seveneleven.y.h - hard coded for now
+encryption_key = base64.b64decode("g2JZ9nYmS3EhNiVTWyG5xbqGsqq4QFiNi6GLLbVhRbw=")
+
 def generateTssa(URL, method, payload = None, accessToken = None):
 
     # Replace the https URL with a http one and convert the URL to lowercase
