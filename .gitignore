@@ -1,6 +1,5 @@
 *.pyc
 *.pyo
 *.json
-
-# local config
+/__pycache__/*
 settings.py
