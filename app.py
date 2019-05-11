@@ -44,9 +44,10 @@ DEVICE_NAME = os.getenv('DEVICE_NAME', settings.DEVICE_NAME)
 OS_VERSION = os.getenv('OS_VERSION', settings.OS_VERSION)
 APP_VERSION = os.getenv('APP_VERSION', settings.APP_VERSION)
 
-# If we haven't set the API key or it is it's default value, quit the program
+# If we haven't set the API key or it is it's default value, warn the user that we will disable the Google Maps search.
 if(API_KEY in [None,"changethis",""]):
-    sys.exit("ERROR: API_KEY is not set correctly.\nPlease set it in the settings.py or as an environment variable.")
+    custom_coords = False
+    print("Note: You have not set an API key. You will not be able to use Google to find a stores coordinates.\nBut you can still use the manual search if you know the postcode to the store you want to lock in from.\n\n\n\n\n")
 
 
 def cheapestFuelAll():
@@ -263,7 +264,10 @@ def index():
         session.pop('SuccessMessage', None)
         session.pop('fuelType', None)
         session.pop('LockinPrice', None)
-        lockedPrices()
+        try:
+            lockedPrices()
+        except:
+            pass
 
     # Get the cheapest fuel price to show on the automatic lock in page
     fuelPrice = cheapestFuelAll()
@@ -413,6 +417,12 @@ def lockin():
                     locLong = float(storeLatLng[1])
                     locLong += (random.uniform(0.01,0.000001) * random.choice([-1,1]))
                 else:
+                    # If we have made entered the wrong manual postcode for a store, and haven't
+                    # set the Google Maps API, return an error since we cant use the API
+                    if not custom_coords:
+                        # If it is, get the error message and return back to the index
+                        session['ErrorMessage'] = "Error: You entered a manual postcode where no 7Eleven store is. Please set a Google Maps API key or enter a valid postcode."
+                        return redirect(url_for('index'))
                     # Initiate the Google Maps API
                     gmaps = googlemaps.Client(key = API_KEY)
                     # Get the longitude and latitude from the submitted postcode

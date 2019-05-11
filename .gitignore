@@ -3,3 +3,4 @@
 *.json
 /__pycache__/*
 settings.py
+settings.py
