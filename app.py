@@ -144,13 +144,13 @@ def lockedPrices():
 
         try:
             ts = returnContent[0]['RedeemedAt']
-            session['fuelLockRedeemed'] = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y at %H:%M:%S')
+            session['fuelLockRedeemed'] = datetime.datetime.fromtimestamp(ts).strftime('%A %d %B %Y at %I:%M %p')
         except:
             session['fuelLockRedeemed'] = ""
 
         try:
             ts = returnContent[0]['ExpiresAt']
-            session['fuelLockExpiry'] = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y at %H:%M:%S')
+            session['fuelLockExpiry'] = datetime.datetime.fromtimestamp(ts).strftime('%A %d %B %Y at %I:%M %p')
         except:
             pass
 
