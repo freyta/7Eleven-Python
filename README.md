@@ -28,6 +28,7 @@ And browse to http://[Docker host IP]:5000
 Other environment variables you can specify at runtime:
 
 `BASE_URL`: The URL for the 7-Eleven API.<br />
+`TZ`: Display time using the chosen timezone.<br />
 `PRICE_URL`: The URL for the fuel price API (currently defaults to the API at projectzerothree.info)<br />
 `DEVICE_NAME`: The name of the device reported on login to the 7-Eleven API (set by default in settings.py)<br />
 `OS_VERSION`: The Android OS version reported on login to the 7-Eleven API (set by default in settings.py)<br />

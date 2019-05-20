@@ -10,6 +10,32 @@
 
 API_KEY=""
 
+# TZ: All times are displayed using the chosen timezone. Choices for Australia are:
+# Australia/ACT
+# Australia/Adelaide
+# Australia/Brisbane
+# Australia/Broken_Hill
+# Australia/Canberra
+# Australia/Currie
+# Australia/Darwin
+# Australia/Eucla
+# Australia/Hobart
+# Australia/LHI
+# Australia/Lindeman
+# Australia/Lord_Howe
+# Australia/Melbourne
+# Australia/NSW
+# Australia/North
+# Australia/Perth
+# Australia/Queensland
+# Australia/South
+# Australia/Sydney
+# Australia/Tasmania
+# Australia/Victoria
+# Australia/West
+# Australia/Yancowinna
+TZ="UTC"
+
 # BASE_URL: 7-11 Mobile Application API End Point
 BASE_URL="https://711-goodcall.api.tigerspike.com/api/v1/"
 

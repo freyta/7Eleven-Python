@@ -21,6 +21,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 
 import sys
 import os
+import pytz
 import hashlib
 import hmac
 import base64
@@ -37,6 +38,7 @@ import settings
 Set API_KEY in the settings.py file
 '''''''''''''''''''''''''''
 API_KEY = os.getenv('API_KEY',settings.API_KEY)
+TZ = os.getenv('TZ', settings.TZ)
 BASE_URL = os.getenv('BASE_URL',settings.BASE_URL)
 PRICE_URL = os.getenv('PRICE_URL',settings.PRICE_URL)
 DEVICE_NAME = os.getenv('DEVICE_NAME', settings.DEVICE_NAME)
@@ -142,15 +144,17 @@ def lockedPrices():
         session['fuelLockCPL'] = returnContent[0]['CentsPerLitre']
         session['fuelLockLitres'] = returnContent[0]['TotalLitres']
 
+        tz = pytz.timezone(TZ)
+
         try:
             ts = returnContent[0]['RedeemedAt']
-            session['fuelLockRedeemed'] = datetime.datetime.fromtimestamp(ts).strftime('%A %d %B %Y at %I:%M %p')
+            session['fuelLockRedeemed'] = datetime.datetime.fromtimestamp(ts).astimezone(tz).strftime('%A %d %B %Y at %I:%M %p')
         except:
             session['fuelLockRedeemed'] = ""
 
         try:
             ts = returnContent[0]['ExpiresAt']
-            session['fuelLockExpiry'] = datetime.datetime.fromtimestamp(ts).strftime('%A %d %B %Y at %I:%M %p')
+            session['fuelLockExpiry'] = datetime.datetime.fromtimestamp(ts).astimezone(tz).strftime('%A %d %B %Y at %I:%M %p')
         except:
             pass
 
