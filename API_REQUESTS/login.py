@@ -30,6 +30,6 @@ if __name__ == '__main__' :
     # Get your account details. The response is a JSON array.
     get_account_details = json.loads(account.getAccountDetails(myaccount[0],myaccount[1]))
     # Print the users first name
-    print get_account_details['PersonalDetails']['Name']['Firstname']
+    print(get_account_details['PersonalDetails']['Name']['Firstname'])
 
     account.logout(myaccount[0],myaccount[1])

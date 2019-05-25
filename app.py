@@ -51,7 +51,7 @@ if(API_KEY in [None,"changethis",""]):
     custom_coords = False
     print("Note: You have not set an API key. You will not be able to use Google to find a stores coordinates.\nBut you can still use the manual search if you know the postcode to the store you want to lock in from.\n\n\n\n\n")
 
-if(DEVICE_ID in [None,"changethis",""]):
+if(DEVICE_ID in [None,""]):
     DEVICE_ID = ''.join(random.choice('0123456789abcdef') for i in range(15))
     print("Note: You have not set a device ID. Randomly generating one: " + DEVICE_ID)
 
@@ -246,7 +246,7 @@ def generateTssa(URL, method, payload = None, accessToken = None):
     if(payload):
         payload = base64.b64encode(hashlib.md5(payload.encode()).digest())
         str3   += payload.decode()
-        print (str3)
+        
     signature = base64.b64encode(hmac.new(encryption_key, str3.encode(), digestmod=hashlib.sha256).digest())
 
     # Finish building the tssa string

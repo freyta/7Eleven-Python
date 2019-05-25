@@ -87,8 +87,7 @@ def getAccountDetails(deviceSecret, accessToken):
                'X-OsName':'Android',
                'X-DeviceID':DEVICE_ID,
                'X-AppVersion':APP_VERSION,
-               'X-DeviceSecret':deviceSecret,
-               'Content-Type':'application/json; charset=utf-8'}
+               'X-DeviceSecret':deviceSecret}
 
     response = requests.get(BASE_URL + "account/GetAccountInfo", headers=headers)
 

@@ -28,8 +28,7 @@ def listFuellock(deviceSecret, accessToken):
                'X-OsName':'Android',
                'X-DeviceID':DEVICE_ID,
                'X-AppVersion':APP_VERSION,
-               'X-DeviceSecret':deviceSecret,
-               'Content-Type':'application/json; charset=utf-8'}
+               'X-DeviceSecret':deviceSecret}
 
     response = requests.get(BASE_URL + "FuelLock/List", headers=headers)
 
@@ -100,8 +99,7 @@ def redeemLockin(deviceSecret, accessToken, id):
                'X-OsName':'Android',
                'X-DeviceID':DEVICE_ID,
                'X-AppVersion':APP_VERSION,
-               'X-DeviceSecret':deviceSecret,
-               'Content-Type':'application/json; charset=utf-8'}
+               'X-DeviceSecret':deviceSecret}
 
     response = requests.get(BASE_URL + "FuelLock/Redeem?fuelLockId=" + id, headers=headers)
 
@@ -110,7 +108,6 @@ def redeemLockin(deviceSecret, accessToken, id):
 def isFplRedeemed(deviceSecret, accessToken, id):
 
     tssa = generateTssa(BASE_URL + "FuelLock/IsRedeemed?fuelLockId=" + id, "GET", "", accessToken)
-    print BASE_URL + "FuelLock/IsRedeemed?fuelLockId=" + id
     headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                'Connection':'Keep-Alive',
                'Host':'711-goodcall.api.tigerspike.com',
@@ -119,8 +116,7 @@ def isFplRedeemed(deviceSecret, accessToken, id):
                'X-OsName':'Android',
                'X-DeviceID':DEVICE_ID,
                'X-AppVersion':APP_VERSION,
-               'X-DeviceSecret':deviceSecret,
-               'Content-Type':'application/json; charset=utf-8'}
+               'X-DeviceSecret':deviceSecret}
 
     response = requests.get(BASE_URL + "FuelLock/IsRedeemed?fuelLockId=" + id, headers=headers)
 
@@ -140,8 +136,7 @@ def refreshFplData(deviceSecret, accessToken, id):
                'X-OsName':'Android',
                'X-DeviceID':DEVICE_ID,
                'X-AppVersion':APP_VERSION,
-               'X-DeviceSecret':deviceSecret,
-               'Content-Type':'application/json; charset=utf-8'}
+               'X-DeviceSecret':deviceSecret}
 
     response = requests.get(BASE_URL + "FuelLock/Refresh?fuelLockId=" + id, headers=headers)
 
@@ -160,8 +155,7 @@ def checkFuelPrice(store):
                'X-OsVersion':ANDROID_VERSION,
                'X-OsName':'Android',
                'X-DeviceID':DEVICE_ID,
-               'X-AppVersion':APP_VERSION,
-               'Content-Type':'application/json; charset=utf-8'}
+               'X-AppVersion':APP_VERSION}
 
     response = requests.get(BASE_URL + "FuelPrice/FuelPriceForStore/" + store, headers=headers)
 
@@ -178,8 +172,7 @@ def getStores():
                'X-OsVersion':ANDROID_VERSION,
                'X-OsName':'Android',
                'X-DeviceID':DEVICE_ID,
-               'X-AppVersion':APP_VERSION,
-               'Content-Type':'application/json; charset=utf-8'}
+               'X-AppVersion':APP_VERSION}
 
     response = requests.get(BASE_URL + "store/StoresAfterDateTime/1001", headers=headers)
 

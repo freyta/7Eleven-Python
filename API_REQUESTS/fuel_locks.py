@@ -36,8 +36,8 @@ if __name__ == '__main__' :
         # Get the details of the last fuel lock.
         get_last_lock_details = json.loads(fuellock.refreshFplData(myaccount[0], myaccount[1], get_fuel_locks[0]['Id']))
 
-        print "You saved $" + str(get_last_lock_details['RewardAmount']) + ", while paying " + str(get_last_lock_details['CentsPerLitre']) + "cents per litre."
-        print "You filled up " + str(get_last_lock_details['RewardLitres'])[0:5] + " litres."
+        print("You saved $" + str(get_last_lock_details['RewardAmount']) + ", while paying " + str(get_last_lock_details['CentsPerLitre']) + "cents per litre.")
+        print("You filled up " + str(get_last_lock_details['RewardLitres'])[0:5] + " litres.")
 
     # And for good measure, logout.
     account.logout(myaccount[0],myaccount[1])
