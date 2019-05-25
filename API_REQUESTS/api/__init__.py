@@ -23,7 +23,6 @@ import uuid
 import requests
 import json
 import random
-import googlemaps
 
 ANDROID_VERSION = "Android 9.0.0"
 APP_VERSION = "1.7.1.2012"

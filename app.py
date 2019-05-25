@@ -44,16 +44,15 @@ PRICE_URL = os.getenv('PRICE_URL',settings.PRICE_URL)
 DEVICE_NAME = os.getenv('DEVICE_NAME', settings.DEVICE_NAME)
 OS_VERSION = os.getenv('OS_VERSION', settings.OS_VERSION)
 APP_VERSION = os.getenv('APP_VERSION', settings.APP_VERSION)
-DEVICE_ID = os.getenv('DEVICE_ID', settings.DEVICE_ID)
 
 # If we haven't set the API key or it is it's default value, warn the user that we will disable the Google Maps search.
 if(API_KEY in [None,"changethis",""]):
     custom_coords = False
     print("Note: You have not set an API key. You will not be able to use Google to find a stores coordinates.\nBut you can still use the manual search if you know the postcode to the store you want to lock in from.\n\n\n\n\n")
 
-if(DEVICE_ID in [None,""]):
-    DEVICE_ID = ''.join(random.choice('0123456789abcdef') for i in range(15))
-    print("Note: You have not set a device ID. Randomly generating one: " + DEVICE_ID)
+# If we have not set a device ID then let them know a random one will be generated
+if(os.getenv('DEVICE_ID', settings.DEVICE_ID) in [None,"changethis",""]):
+    print("Note: You have not set a device ID. A random one will be set when you login.")
 
 def cheapestFuelAll():
     # Just a quick way to get fuel prices from a website that is already created.
@@ -132,7 +131,7 @@ def lockedPrices():
                'Authorization':'%s' % tssa,
                'X-OsVersion':OS_VERSION,
                'X-OsName':'Android',
-               'X-DeviceID':DEVICE_ID,
+               'X-DeviceID':session['DEVICE_ID'],
                'X-AppVersion':APP_VERSION,
                'X-DeviceSecret':session['deviceSecret']}
 
@@ -215,14 +214,17 @@ def getStoreAddress(storePostcode):
             return str(store['Latitude']), str(store['Longitude'])
 
 def getKey():
-
+    # Found in file au.com.seveneleven.y.h
     a = [103, 180, 267, 204, 390, 504, 497, 784, 1035, 520, 1155, 648, 988, 1456, 1785]
+    # Found in file au.com.seveneleven.x.a
     b = [50, 114, 327, 276, 525, 522, 371, 904, 1017, 810, 858, 852, 1274, 1148, 915]
+    # Found in file au.com.seveneleven.x.c
     c = [74, 220, 249, 416, 430, 726, 840, 568, 1017, 700, 1155, 912, 1118, 1372]
 
+    # Get the length of all 3 variables
     length = len(a) + len(b) + len(c)
     key = ""
-
+    # Generate the key with a bit of maths
     for i in range(length):
         if(i % 3 == 0):
             key += chr( int((a[int(i / 3)] / ((i / 3) + 1)) ))
@@ -230,6 +232,7 @@ def getKey():
             key += chr( int((b[int((i - 1) / 3)] / (((i - 1) / 3) + 1)) ))
         if(i % 3 == 2):
             key += chr( int((c[int((i - 1) / 3)] / (((i - 2) / 3) + 1)) ))
+
     return key
 
 # Generate the tssa string
@@ -246,7 +249,7 @@ def generateTssa(URL, method, payload = None, accessToken = None):
     if(payload):
         payload = base64.b64encode(hashlib.md5(payload.encode()).digest())
         str3   += payload.decode()
-        
+
     signature = base64.b64encode(hmac.new(encryption_key, str3.encode(), digestmod=hashlib.sha256).digest())
 
     # Finish building the tssa string
@@ -276,9 +279,17 @@ def index():
         except:
             pass
 
+    # If the environmental variable DEVICE_ID is empty or is not set at all
+    if(os.getenv('DEVICE_ID', settings.DEVICE_ID) in [None,"changethis",""]):
+        # Set the device id to a randomly generated one
+        DEVICE_ID = ''.join(random.choice('0123456789abcdef') for i in range(15))
+    else:
+        # Otherwise we set the it to the one set in settings.py
+        DEVICE_ID = os.getenv('DEVICE_ID', settings.DEVICE_ID)
+
     # Get the cheapest fuel price to show on the automatic lock in page
     fuelPrice = cheapestFuelAll()
-    return render_template('price.html')
+    return render_template('price.html',device_id=DEVICE_ID)
 
 
 
@@ -290,6 +301,13 @@ def login():
     session.pop('fuelType', None)
 
     if request.method == 'POST':
+
+        # If the device ID field was left blank, set a random one
+        if ((request.form['device_id']) in [None,""]):
+            session['DEVICE_ID'] = os.getenv('DEVICE_ID', ''.join(random.choice('0123456789abcdef') for i in range(15)))
+        else:
+            # Since it was filled out, we will use that for the rest of the session
+            session['DEVICE_ID'] = os.getenv('DEVICE_ID', request.form['device_id'])
         password = str(request.form['password'])
         email = str(request.form['email'])
 
@@ -304,7 +322,7 @@ def login():
                    'Authorization':'%s' % tssa,
                    'X-OsVersion':OS_VERSION,
                    'X-OsName':'Android',
-                   'X-DeviceID':DEVICE_ID,
+                   'X-DeviceID':session['DEVICE_ID'],
                    'X-AppVersion':APP_VERSION,
                    'Content-Type':'application/json; charset=utf-8'}
 
@@ -358,7 +376,7 @@ def logout():
                'Authorization':'%s' % tssa,
                'X-OsVersion':OS_VERSION,
                'X-OsName':'Android',
-               'X-DeviceID':DEVICE_ID,
+               'X-DeviceID':session['DEVICE_ID'],
                'X-AppVersion':APP_VERSION,
                'X-DeviceSecret':session['deviceSecret'],
                'Content-Type':'application/json; charset=utf-8'}
@@ -452,7 +470,7 @@ def lockin():
                        'Authorization':'%s' % tssa,
                        'X-OsVersion':OS_VERSION,
                        'X-OsName':'Android',
-                       'X-DeviceID':DEVICE_ID,
+                       'X-DeviceID':session['DEVICE_ID'],
                        'X-AppVersion':APP_VERSION,
                        'X-DeviceSecret':session['deviceSecret'],
                        'Content-Type':'application/json; charset=utf-8'}
@@ -508,7 +526,7 @@ def lockin():
                    'Authorization':'%s' % tssa,
                    'X-OsVersion':OS_VERSION,
                    'X-OsName':'Android',
-                   'X-DeviceID':DEVICE_ID,
+                   'X-DeviceID':session['DEVICE_ID'],
                    'X-AppVersion':APP_VERSION,
                    'X-DeviceSecret':session['deviceSecret'],
                    'Content-Type':'application/json; charset=utf-8'}
@@ -579,4 +597,4 @@ if __name__ == '__main__':
             f.write(getStores())
 
     app.secret_key = os.urandom(12)
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',debug=True)

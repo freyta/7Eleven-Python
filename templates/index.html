@@ -84,8 +84,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                          <div class="pic_info">
                              <h2>Please enter your email and password below:<br><br></h2>
 														 <form class="form-inline mt-2 mt-md-0" action="/login" method="POST">
-															 <input class="form-control mr-sm-2" type="username" placeholder="" name="email"><br><br>
-															 <input class="form-control mr-sm-2" type="password" placeholder=""  name="password"><br><br>
+															 <input class="form-control mr-sm-2" type="username" placeholder="Email" name="email"><br><br>
+															 <input class="form-control mr-sm-2" type="password" placeholder="Password"  name="password"><br><br>
+															 <input class="form-control mr-sm-2" type="text" placeholder="Device ID (can be blank)" value="{{ device_id }}" maxlength="15"  name="device_id"><br><br>
 															 <button class="btn btn-lg btn-primary" type="submit" value="Login">Login</button>
 														 </form>
                          </div>

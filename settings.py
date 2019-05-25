@@ -51,5 +51,6 @@ OS_VERSION="Android 9.0.0"
 # App version
 APP_VERSION="1.7.1.2012"
 
-# Device id - A 15 character hexadecimal device identifier. You can change this to any device you want.
+# Device id - A 15 character hexadecimal device identifier. You can change this to your own device ID
+# if you know it, otherwise a random one will be generated
 DEVICE_ID=""
