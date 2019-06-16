@@ -73,7 +73,7 @@ def index():
 
     # Set the session max price for the auto locker
     session['max_price'] = config['General']['max_price']
-    
+
     # Get the cheapest fuel price to show on the automatic lock in page
     fuelPrice = functions.cheapestFuelAll()
 
