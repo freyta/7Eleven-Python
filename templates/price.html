@@ -1,6 +1,26 @@
 {% extends "index.html" %}
 {% block content %}
-    <div class="automanual" align="center"><a id="aauto" href="#">Automatic</a> | <a id="aman" href="#">Manual</a><hr></div>
+{% if session['fuelLockActive'][0] %}
+    <div class="automanual" align="center"><a id="aset" href="#">Settings</a><hr></div>
+
+      <div id="settings">
+        <form class="form-inline mt-2 mt-md-0" action="/save_settings" method="POST">
+            <h6 style="font-style: italic; margin-bottom: 2ch;">These settings are for the automatic fuel lock function. Proceed with caution, you will not be warned when a fuel lock is found.</h6>
+            <div class="form-group">
+                <label for="fueltype">What is the maximum you want to pay for Premium 98? </label><br><br>
+                <input class="form-control mr-sm-2" type="text" placeholder="{{ session['max_price'] }}" name="max_price"><br>
+                {% if session['auto_lock'] %}
+                <label>  <input type="checkbox" name="auto_lockin" checked> Enable auto lock in</label><br><br>
+    						{% else %}
+    						<label>  <input type="checkbox" name="auto_lockin"> Enable auto lock in</label><br><br>
+    						{% endif %}
+                <button class="btn btn-default" name="submit" value="save_settings" type="submit" onclick="loader.style.display = 'block'">Save settings</button>
+            </div>
+        </form>
+      </div>
+
+    {% else %}
+    <div class="automanual" align="center"><a id="aauto" href="#">Automatic</a> | <a id="aman" href="#">Manual</a> | <a id="aset" href="#">Settings</a><hr></div>
     <div id="automatic">
         <form class="form-inline mt-2 mt-md-0"  action="/lockin" method="POST">
             <div class="form-group">
@@ -26,7 +46,7 @@
     </div>
     <div id="manual">
         <form class="form-inline mt-2 mt-md-0" action="/lockin" method="POST">
-            <h6 style="font-style: italic; margin-bottom: 2ch;">Note: Searching manually will not verify the fuel price against what could be the cheapest around. It will just lock in the price that it finds.</h6>
+            <h6 style="font-style: italic; margin-bottom: 2ch;">Note: Searching manually lets you choose a custom postcode for where you want to lock in fuel from. You will land on a confirmation page where you can decide if you want to continue locking in that price or not.</h6>
             <div class="form-group">
                 <label for="fueltype">Which fuel do you want?</label>
                 <select id="manualfueltype" name="fueltype" class="custom-select">
@@ -43,8 +63,25 @@
             </div>
         </form>
     </div>
+    <div id="settings">
+      <form class="form-inline mt-2 mt-md-0" action="/save_settings" method="POST">
+          <h6 style="font-style: italic; margin-bottom: 2ch;">These settings are for the automatic fuel lock function. Proceed with caution, you will not be warned when a fuel lock is found.</h6>
+          <div class="form-group">
+              <label for="fueltype">What is the maximum you want to pay for Premium 98? </label><br><br>
+              <input class="form-control mr-sm-2" type="text" placeholder="1.39" name="max_price"><br>
+              {% if session['auto_lock'] %}
+              <label>  <input type="checkbox" name="auto_lockin" checked> Enable auto lock in</label><br><br>
+              {% else %}
+              <label>  <input type="checkbox" name="auto_lockin"> Enable auto lock in</label><br><br>
+              {% endif %}
+              <button class="btn btn-default" name="submit" value="save_settings" type="submit" onclick="loader.style.display = 'block'">Save settings</button>
+          </div>
+      </form>
+    </div>
     <div id="buttonpressed">
         <h2 align="center">Hold on tight!</h2>
         <h3 align="center">I am currently attempting to lock in your fuel price. This may take a minute or so...</h3>
     </div>
+
+  {% endif %}
 {% endblock %}

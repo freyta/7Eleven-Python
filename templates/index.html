@@ -24,17 +24,26 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		$("#manual").fadeOut("fast");
 	   $("#aauto").click(function(event){
 				$("#manual").hide();
+				$("#settings").hide();
 				$("#buttonpressed").hide();
 	      $("#automatic").fadeIn("fast");
 	   });
 	   $("#aman").click(function(event){
 	       $("#automatic").hide();
+				 $("#settings").hide();
 				 $("#buttonpressed").hide();
 	       $("#manual").fadeIn("fast");
+	   });
+	   $("#aset").click(function(event){
+	       $("#automatic").hide();
+				 $("#manual").hide();
+				 $("#buttonpressed").hide();
+	       $("#settings").fadeIn("fast");
 	   });
 		 $(".btn").click(function(event){
 	       $("#automatic").hide();
 			   $("#manual").hide();
+			   $("#settings").hide();
 			   $(".automanual").hide();
 	       $("#buttonpressed").fadeIn("fast");
 		 });
@@ -86,7 +95,8 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 														 <form class="form-inline mt-2 mt-md-0" action="/login" method="POST">
 															 <input class="form-control mr-sm-2" type="username" placeholder="Email" name="email"><br><br>
 															 <input class="form-control mr-sm-2" type="password" placeholder="Password"  name="password"><br><br>
-															 <input class="form-control mr-sm-2" type="text" placeholder="Device ID (can be blank)" value="{{ device_id }}" maxlength="15"  name="device_id"><br><br>
+															 <input class="form-control mr-sm-2" type="text" placeholder="Device ID (can be blank)" value="{{ device_id }}" maxlength="16"  name="device_id"><br><br>
+															 <label><input type="checkbox" name="auto_lockin"> Enable auto lock in</label><br><br>
 															 <button class="btn btn-lg btn-primary" type="submit" value="Login">Login</button>
 														 </form>
                          </div>
@@ -103,11 +113,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 						<h3>{{ session['SuccessMessage'] }}</h3>
 						<h3><a href="?action=refresh">Refresh</a></h3>
 					 {% elif session['firstName'] %}
-
-					  {% if session['fuelLockActive'][0] %}
-						{% else %}
 							{% block content %}{% endblock %}
-						{% endif %}
 					 {% endif %}
 
 				 </div>
