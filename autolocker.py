@@ -45,8 +45,9 @@ def search_ozbargain():
     title = []
 
     for title_text in response:
-        # If the word "7-Eleven" is in the title, add it to our list
-        if "7-Eleven" in title_text.text:
+        # If the words "7-Eleven" and "Fuel" is in the title, add it to our list
+        # Adding "Fuel" should get rid of other deals posted
+        if "7-Eleven" and "Fuel" in title_text.text:
             title.append(title_text.text)
 
     # Set suburb to none in case we don't find one later
@@ -90,7 +91,6 @@ def start_lockin():
     fuel_lock_saved = config['Account'].getboolean('fuel_lock_saved')
     # Get the deviceSecret, this confirms we are locked in
     deviceSecret = config['Account']['deviceSecret']
-
 
     # If we have auto lock enabled, and are logged in but haven't saved a fuel lock yet, then proceed.
     if(auto_lock_enabled and deviceSecret and not fuel_lock_saved):
@@ -160,13 +160,13 @@ def start_lockin():
 
                 # If the price that we tried to lock in is more expensive than scripts price, we return an error
                 if (float(pump_price) >= float(max_price)):
-                    print("There was a new deal posted, but the fuel price was too expensive. It would have been " + pump_price + ".")
+                    print("There was a new deal posted, but the fuel price was too expensive. You want to fill up for less than {0}c, i t would have been {1}c.".format(str(max_price), str(pump_price)))
                 else:
                     # Now we want to lock in the maximum litres we can.
                     NumberOfLitres = int(float(config['Account']['cardbalance']) / pump_price * 100)
 
                     # Lets start the actual lock in process
-                    payload = '{"AccountId":"' + account_ID + '","FuelType":"56","NumberOfLitres":"' + str(NumberOfLitres) + '"}'
+                    payload = '{"AccountId":"' + config['Account']['account_id'] + '","FuelType":"56","NumberOfLitres":"' + str(NumberOfLitres) + '"}'
 
                     tssa = functions.generateTssa(functions.BASE_URL + "FuelLock/Confirm", "POST", payload, accessToken)
 
@@ -181,7 +181,13 @@ def start_lockin():
 
                     # Send through the request and get the response
                     response = requests.post(functions.BASE_URL + "FuelLock/Confirm", data=payload, headers=headers)
+                    returnContent = json.loads(response.content)
 
+                    try:
+                        if(returnContent['Message']):
+                            print("Error: There was an error locking in.")
+                    except:
+                            print("Success! Locked in {0}L at {1} cents per litre".format(str(returnContent['TotalLitres']), str(returnContent['CentsPerLitre'])))
 if __name__ == '__main__':
     # Make the variable suburb global
     global suburb
