@@ -8,6 +8,18 @@ You will need to install the dependencies in requirements.txt, you can use pip a
 
 You will also need a [Google Maps API key](https://developers.google.com/maps/documentation/embed/get-api-key), with the 'Geocoding API' enabled. You must set this key in settings.py or using the `API_KEY` environment variable.
 
+# Optional Security Setup
+
+Uncomment the basic authentication sections in app.py to enable a login prompt before accessing the site. Update the 'BASIC_AUTH_USERNAME' and 'BASIC_AUTH_PASSWORD' values to set the username and password.
+
+Uncomment the SSL section to enable HTTPS. Generate your own certificates using letsencrypt (https://letsencrypt.org/getting-started/) or generate a self signed certificate with OpenSSL.
+
+`openssl req -new -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out domain.crt -keyout domain.key`
+
+Copy the crt and key files to the same directory as app.py and uncomment the last line in app.py and comment the app.run line above.
+
+`app.run(host='0.0.0.0',port=443,ssl_context=context)`
+
 # Usage
 Very simple to use, run the program with either of the following commands `python3 app.py` or  `python app.py`. After you have started the program all you have to do is open your web browser and navigate to `http://[your-local-ip-address]:5000` i.e. `http://192.168.1.100:5000`. Then simply login with your 7-Eleven email and password, and click either automatic lock in or manually enter a postcode that you want to lock in from.
 

@@ -19,6 +19,15 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
+# Optional Security
+# Uncomment Basic Auth section to enable basic authentication so users will be prompted a username and password before seeing the website.
+#from flask_basicauth import BasicAuth  
+
+# Uncomment SSL section to enable HTTPS (certificates required)
+#import ssl
+#context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+#context.load_cert_chain('domain.crt', 'domain.key')
+
 # Used for getting/settings the OS environments and for writing/reading the stores.json file
 import sys, os, time
 # Used for sending requests to 7-Eleven and getting the response in a JSON format.
@@ -47,6 +56,13 @@ if(os.getenv('DEVICE_ID', settings.DEVICE_ID) in [None,"changethis",""]):
 
 
 app = Flask(__name__)
+
+# Uncomment to enable basic authentication
+#app.config['BASIC_AUTH_FORCE'] = True
+#app.config['BASIC_AUTH_USERNAME'] = 'petrol'
+#app.config['BASIC_AUTH_PASSWORD'] = 'lockit'
+#basic_auth = BasicAuth(app)
+
 @app.route('/')
 def index():
 
@@ -461,3 +477,6 @@ if __name__ == '__main__':
 
     app.secret_key = os.urandom(12)
     app.run(host='0.0.0.0')
+
+    # Uncomment to enable HTTPS/SSL and comment out the line above
+    #app.run(host='0.0.0.0',port=443,ssl_context=context)
