@@ -1,6 +1,6 @@
 FROM python:3.7-alpine
 
-RUN apk --update add --no-cache bash tzdata
+RUN apk --update add --no-cache bash tzdata build-base libffi-dev openssl-dev
 
 WORKDIR .
 
