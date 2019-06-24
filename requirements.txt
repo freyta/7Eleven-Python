@@ -7,3 +7,4 @@ apscheduler
 beautifulsoup4
 pyOpenSSL==18.0.0
 flask_basicauth
+pycryptodome

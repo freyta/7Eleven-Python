@@ -16,6 +16,8 @@
 
 # Functions used for the TSSA generation
 import hmac, base64, hashlib, uuid, time
+# Needed for the VmobID
+from Crypto.Cipher import DES
 # Functions used for setting our currently locked in fuel prices to the correct timezone
 import pytz, datetime
 # Used for requests to the price check script and for 7-Eleven stores
@@ -27,8 +29,9 @@ import random
 # Needed so we can set flask session variables
 from flask import session
 
+
 '''''''''''''''''''''''''''
-Set API_KEY in the settings.py file
+You can set or change any these environmental variables in settings.py
 '''''''''''''''''''''''''''
 API_KEY = os.getenv('API_KEY',settings.API_KEY)
 TZ = os.getenv('TZ', settings.TZ)
@@ -162,6 +165,7 @@ def lockedPrices():
                'X-OsVersion':OS_VERSION,
                'X-OsName':'Android',
                'X-DeviceID':session['DEVICE_ID'],
+               'X-VmobID':des_encrypt_string(session['DEVICE_ID']),
                'X-AppVersion':APP_VERSION,
                'X-DeviceSecret':session['deviceSecret']}
 
@@ -229,6 +233,7 @@ def getStores():
                'X-OsVersion':OS_VERSION,
                'X-OsName':'Android',
                'X-DeviceID':deviceID,
+               'X-VmobID':des_encrypt_string(deviceID),
                'X-AppVersion':APP_VERSION}
 
     response = requests.get(BASE_URL + "store/StoresAfterDateTime/1001", headers=headers)
@@ -245,6 +250,33 @@ def getStoreAddress(storePostcode):
         if(store['PostCode'] == storePostcode):
             # Since we have a match, return the latitude + longitude of our store
             return str(store['Latitude']), str(store['Longitude'])
+
+# This is the padding used so we can generate the encrypted DES strings
+def des_encryption_padding(plain_text):
+    # Get the left over number for our padding. Our string
+    # must be a multiple of 8. So if it is only 36 chars long,
+    # we will pad it with 4 (blank) characters
+    padding = DES.block_size - len(plain_text) % DES.block_size
+    # Our "invisible" character for the padding
+    pad_char = chr(padding)
+    # Pad our string with the invisible characters
+    plain_text = plain_text + (padding * pad_char)
+
+    return plain_text
+
+def des_encrypt_string(DEVICE_ID):
+    # We only need the first 8 characters of the encryption key
+    # Found in co.vmob.sdk.util.Utils.java
+    key = 'co.vmob.sdk.android.encrypt.key'.encode()[:8]
+
+    # The encryption prefix
+    encryption_prefix = 'co.vmob.android.sdk.'
+    # Now the encryption part
+    cipher = DES.new(key, DES.MODE_ECB)
+    encrypted_message = cipher.encrypt(des_encryption_padding(encryption_prefix + DEVICE_ID).encode())
+
+    # Return the encrypted message base64 encoded and "decoded" so it is a string, not bytes.
+    return base64.b64encode(encrypted_message).replace(b"/", b"_").decode() + "_"
 
 # Encryption key used for the TSSA
 encryption_key = bytes(base64.b64decode(getKey()))

@@ -67,8 +67,8 @@
       <form class="form-inline mt-2 mt-md-0" action="/save_settings" method="POST">
           <h6 style="font-style: italic; margin-bottom: 2ch;">These settings are for the automatic fuel lock function. Proceed with caution, you will not be warned when a fuel lock is found.</h6>
           <div class="form-group">
-              <label for="fueltype">What is the maximum you want to pay for Premium 98? </label><br><br>
-              <input class="form-control mr-sm-2" type="text" placeholder="1.39" name="max_price"><br>
+              <label for="fueltype">What is the maximum you want to pay for Premium 98 in cents? </label><br><br>
+              <input class="form-control mr-sm-2" type="text" placeholder="139.0" name="max_price"><br>
               {% if session['auto_lock'] %}
               <label>  <input type="checkbox" name="auto_lockin" checked> Enable auto lock in</label><br><br>
               {% else %}

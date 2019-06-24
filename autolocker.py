@@ -80,6 +80,38 @@ def search_pzt():
 
     return suburb
 
+# Check if we have a current fuel lock
+def check_fuellock(accessToken, deviceSecret, DEVICE_ID):
+    # Generate the tssa
+    tssa = functions.generateTssa(functions.BASE_URL + "FuelLock/List", "GET", None, accessToken)
+
+    # Assign the headers and then request the fuel prices.
+    headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
+               'Authorization':'%s' % tssa,
+               'X-OsVersion':functions.OS_VERSION,
+               'X-OsName':'Android',
+               'X-DeviceID':DEVICE_ID,
+               'X-VmobID':functions.des_encrypt_string(DEVICE_ID),
+               'X-AppVersion':functions.APP_VERSION,
+               'X-DeviceSecret':deviceSecret}
+
+    # Send the request and get the response into a JSON array
+    response = requests.get(functions.BASE_URL + "FuelLock/List", headers=headers)
+    returnContent = json.loads(response.content)
+
+
+    config = configparser.ConfigParser()
+    config.read("./autolock.ini")
+    # If the Status of our last fuel lock is 0 (ACTIVE) set it to True, otherwise it has EXPIRED (1) or
+    # was REDEEMED (2), so we haven't got a fuel lock saved.
+    if(returnContent[0]['Status'] == 0):
+        config.set('Account', 'fuel_lock_saved', "True")
+    else:
+        config.set('Account', 'fuel_lock_saved', "False")
+
+    # Return our fuel lock saved boolean
+    return config['Account'].getboolean('fuel_lock_saved')
+
 def start_lockin():
     config = configparser.ConfigParser()
     config.read("./autolock.ini")
@@ -87,18 +119,18 @@ def start_lockin():
     auto_lock_enabled = config['General'].getboolean('auto_lock_enabled')
     # Get the maximum price we want to pay for fuel
     max_price = config['General']['max_price']
-    # Check if we have saved a fuel lock
-    fuel_lock_saved = config['Account'].getboolean('fuel_lock_saved')
-    # Get the deviceSecret, this confirms we are locked in
+    # Get our account details
     deviceSecret = config['Account']['deviceSecret']
+    accessToken = config['Account']['accessToken']
+    cardBalance = config['Account']['cardBalance']
+    DEVICE_ID = config['Account']['DEVICE_ID']
+
+    # Check if we have saved a fuel lock. We make a proper check here in case we have already locked in a price
+    # without updating the autolock.ini for some reason.
+    fuel_lock_saved = check_fuellock(accessToken, deviceSecret, DEVICE_ID)
 
     # If we have auto lock enabled, and are logged in but haven't saved a fuel lock yet, then proceed.
     if(auto_lock_enabled and deviceSecret and not fuel_lock_saved):
-        # Get our account details
-        deviceSecret = config['Account']['deviceSecret']
-        accessToken = config['Account']['accessToken']
-        cardBalance = config['Account']['cardBalance']
-        DEVICE_ID = config['Account']['DEVICE_ID']
 
         # Search OzBargain for a new deal first, it may be posted there first
         if(not search_ozbargain()):
@@ -130,6 +162,7 @@ def start_lockin():
                        'X-OsVersion':functions.OS_VERSION,
                        'X-OsName':'Android',
                        'X-DeviceID':DEVICE_ID,
+                       'X-VmobID':functions.des_encrypt_string(DEVICE_ID),
                        'X-AppVersion':functions.APP_VERSION,
                        'X-DeviceSecret':deviceSecret,
                        'Content-Type':'application/json; charset=utf-8'}
@@ -160,7 +193,7 @@ def start_lockin():
 
                 # If the price that we tried to lock in is more expensive than scripts price, we return an error
                 if (float(pump_price) >= float(max_price)):
-                    print("There was a new deal posted, but the fuel price was too expensive. You want to fill up for less than {0}c, i t would have been {1}c.".format(str(max_price), str(pump_price)))
+                    print("There was a new deal posted, but the fuel price was too expensive. You want to fill up for less than {0}c, it would have been {1}c.".format(str(max_price), str(pump_price)))
                 else:
                     # Now we want to lock in the maximum litres we can.
                     NumberOfLitres = int(float(config['Account']['cardbalance']) / pump_price * 100)
@@ -175,6 +208,7 @@ def start_lockin():
                                'X-OsVersion':functions.OS_VERSION,
                                'X-OsName':'Android',
                                'X-DeviceID':DEVICE_ID,
+                               'X-VmobID':functions.des_encrypt_string(DEVICE_ID),
                                'X-AppVersion':functions.APP_VERSION,
                                'X-DeviceSecret':deviceSecret,
                                'Content-Type':'application/json; charset=utf-8'}

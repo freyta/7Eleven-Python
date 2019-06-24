@@ -74,6 +74,11 @@ hr{
 	margin-top: 0px;
 	top: 0px;
 }
+#settings{
+	display: none;
+	margin-top: 0px;
+	top: 0px;
+}
 #buttonpressed{
 	display: none;
 	margin-top: 0px;
