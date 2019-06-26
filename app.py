@@ -107,7 +107,7 @@ def login():
     if request.method == 'POST':
         # If the device ID field was left blank, set a random one
         if ((request.form['device_id']) in [None,""]):
-            session['DEVICE_ID'] = os.getenv('DEVICE_ID', ''.join(random.choice('0123456789abcdef') for i in range(15)))
+            session['DEVICE_ID'] = os.getenv('DEVICE_ID', ''.join(random.choice('0123456789abcdef') for i in range(16)))
         else:
             # Since it was filled out, we will use that for the rest of the session
             session['DEVICE_ID'] = os.getenv('DEVICE_ID', request.form['device_id'])
