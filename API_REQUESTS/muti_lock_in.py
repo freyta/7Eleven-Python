@@ -77,7 +77,7 @@ if __name__ == '__main__' :
 
         # Start the lock in session. Here you can confirm the price if you want
         # Note: You need to add the price confirmation yourself.
-        fuellock.startLockinSession(myaccount[0], myaccount[1], fuel_location[2], fuel_location[3]))
+        fuellock.startLockinSession(myaccount[0], myaccount[1], fuel_location[2], fuel_location[3])
 
         # Lock in the price
         fuellock.confirmLockin(myaccount[0], myaccount[1], myaccount[2], FUEL_TYPE, litres)
