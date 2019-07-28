@@ -170,7 +170,7 @@ def lockedPrices():
                'X-VmobID':des_encrypt_string(session['DEVICE_ID']),
                'X-AppVersion':APP_VERSION,
                'X-DeviceSecret':session['deviceSecret']}
-    print(des_encrypt_string(session['DEVICE_ID']))
+               
     response = requests.get(BASE_URL + "FuelLock/List", headers=headers)
     returnContent = json.loads(response.content)
 
