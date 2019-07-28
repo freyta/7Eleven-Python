@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 #    7-Eleven Python implementation. This program allows you to lock in a fuel price from your computer.
 #    Copyright (C) 2019  Freyta
 #

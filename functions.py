@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 #    7-Eleven Python implementation. This program allows you to lock in a fuel price from your computer.
 #    Copyright (C) 2019  Freyta
 #
@@ -17,7 +19,7 @@
 # Functions used for the TSSA generation
 import hmac, base64, hashlib, uuid, time
 # Needed for the VmobID
-from Crypto.Cipher import DES
+import pyDes
 # Functions used for setting our currently locked in fuel prices to the correct timezone
 import pytz, datetime
 # Used for requests to the price check script and for 7-Eleven stores
@@ -168,7 +170,7 @@ def lockedPrices():
                'X-VmobID':des_encrypt_string(session['DEVICE_ID']),
                'X-AppVersion':APP_VERSION,
                'X-DeviceSecret':session['deviceSecret']}
-
+    print(des_encrypt_string(session['DEVICE_ID']))
     response = requests.get(BASE_URL + "FuelLock/List", headers=headers)
     returnContent = json.loads(response.content)
 
@@ -251,19 +253,6 @@ def getStoreAddress(storePostcode):
             # Since we have a match, return the latitude + longitude of our store
             return str(store['Latitude']), str(store['Longitude'])
 
-# This is the padding used so we can generate the encrypted DES strings
-def des_encryption_padding(plain_text):
-    # Get the left over number for our padding. Our string
-    # must be a multiple of 8. So if it is only 36 chars long,
-    # we will pad it with 4 (blank) characters
-    padding = DES.block_size - len(plain_text) % DES.block_size
-    # Our "invisible" character for the padding
-    pad_char = chr(padding)
-    # Pad our string with the invisible characters
-    plain_text = plain_text + (padding * pad_char)
-
-    return plain_text
-
 def des_encrypt_string(DEVICE_ID):
     # We only need the first 8 characters of the encryption key
     # Found in co.vmob.sdk.util.Utils.java
@@ -272,8 +261,8 @@ def des_encrypt_string(DEVICE_ID):
     # The encryption prefix
     encryption_prefix = 'co.vmob.android.sdk.'
     # Now the encryption part
-    cipher = DES.new(key, DES.MODE_ECB)
-    encrypted_message = cipher.encrypt(des_encryption_padding(encryption_prefix + DEVICE_ID).encode())
+    cipher = pyDes.des(key, pyDes.ECB, pad=None, padmode=pyDes.PAD_PKCS5)
+    encrypted_message = cipher.encrypt(encryption_prefix + DEVICE_ID)
 
     # Return the encrypted message base64 encoded and "decoded" so it is a string, not bytes.
     return base64.b64encode(encrypted_message).replace(b"/", b"_").decode() + "_"
