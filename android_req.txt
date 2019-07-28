@@ -1,0 +1,8 @@
+googlemaps==3.0.2
+requests==2.20.0
+Flask==1.0.2
+pytz
+configparser
+apscheduler
+beautifulsoup4
+pydes
