@@ -51,7 +51,7 @@ DEVICE_NAME="SM-G973FZKAXSA"
 OS_VERSION="Android 9.0.0"
 
 # App version
-APP_VERSION="1.7.1.2012"
+APP_VERSION="1.8.0.2027"
 
 # Device id - A 16 character hexadecimal device identifier. You can change this to your own device ID
 # if you know it, otherwise a random one will be generated
