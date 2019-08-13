@@ -472,6 +472,10 @@ if __name__ == '__main__':
         with open('./stores.json', 'wb') as f:
             f.write(functions.getStores())
 
+    # Check if the autolock.ini file exists, if it doesn't create it.
+    if not (os.path.exists("./autolock.ini")):
+        autolocker.create_ini()
+        
     # Open the config file and read the settings
     config = configparser.ConfigParser()
     config.read("./autolock.ini")

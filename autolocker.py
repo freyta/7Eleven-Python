@@ -27,6 +27,20 @@ import time, random
 # Used for getting the variables and TSSA function etc
 import functions
 
+# Create the autolock.ini if the file doesn't exist.
+def create_ini():
+    config = configparser.ConfigParser()
+    config['General'] = {'auto_lock_enabled': 'False',
+                         'max_price': '138.0'}
+    config['Account'] = {'devicesecret': '',
+                         'accesstoken': '',
+                         'cardbalance': '',
+                         'device_id': '',
+                         'account_id': '',
+                         'fuel_lock_saved': 'False'}
+    config.write(open("autolock.ini","w"))
+    print("autolock.ini wasn't found, so it was created.")
+    
 # A function to search the (new) deals page to see if there is a post about 7-Eleven fuel prices
 def search_ozbargain():
     # We need to reiterate that suburb is global.. for some reason
