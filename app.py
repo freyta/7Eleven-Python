@@ -248,18 +248,21 @@ def save_settings():
         if(request.form.getlist('auto_lockin')):
             config.set('General', 'auto_lock_enabled', "True")
             session['auto_lock'] = True
+
+            # Set the max price to what the user wants as long as it's above 1 dollar and below 2 dollars
+            # Note: Minimum price is $1 to try and avoid any 'honeypot stings' where premium unleaded
+            # is obviously too cheap for us to lock in.
+            if (float(request.form['max_price']) > 100 and float(request.form['max_price']) < 200):
+                config.set('General', 'max_price', request.form['max_price'])
+            else:
+                session['ErrorMessage'] = "The price you tried to lock in was either too cheap or too expensive. It should be between 100 and 200cents"
+                return redirect(url_for('index'))
+
         else:
             config.set('General', 'auto_lock_enabled', "False")
-            session['auto_lock'] = False
+            session['auto_lock'] = False            
+            
 
-        # Set the max price to what the user wants as long as it's above 1 dollar and below 2 dollars
-        # Note: Minimum price is $1 to try and avoid any 'honeypot stings' where premium unleaded
-        # is obviously too cheap for us to lock in.
-        if (float(request.form['max_price']) > 100 and float(request.form['max_price']) < 200):
-            config.set('General', 'max_price', request.form['max_price'])
-        else:
-            session['ErrorMessage'] = "The price you tried to lock in was either too cheap or too expensive. It should be between 100 and 200cents"
-            return redirect(url_for('index'))
         # Save the config file
         with open('./autolock.ini', 'w') as configfile:
             config.write(configfile)
