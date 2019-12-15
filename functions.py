@@ -42,6 +42,7 @@ PRICE_URL = os.getenv('PRICE_URL',settings.PRICE_URL)
 DEVICE_NAME = os.getenv('DEVICE_NAME', settings.DEVICE_NAME)
 OS_VERSION = os.getenv('OS_VERSION', settings.OS_VERSION)
 APP_VERSION = os.getenv('APP_VERSION', settings.APP_VERSION)
+USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0"
 
 def getKey():
     # Found in file au.com.seveneleven.y.h
@@ -92,7 +93,7 @@ def generateTssa(URL, method, payload = None, accessToken = None):
 def cheapestFuelAll():
     # Just a quick way to get fuel prices from a website that is already created.
     # Thank you to master131 for this.
-    r = requests.get(PRICE_URL)
+    r = requests.get(PRICE_URL, headers={"user-agent":USER_AGENT})
     response = json.loads(r.text)
 
     # E10
@@ -170,7 +171,7 @@ def lockedPrices():
                'X-VmobID':des_encrypt_string(session['DEVICE_ID']),
                'X-AppVersion':APP_VERSION,
                'X-DeviceSecret':session['deviceSecret']}
-               
+
     response = requests.get(BASE_URL + "FuelLock/List", headers=headers)
     returnContent = json.loads(response.content)
 
