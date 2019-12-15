@@ -123,7 +123,7 @@ def cheapestFuelAll():
 def cheapestFuel(fueltype):
     # Gets the cheapest fuel price for a certain type of fuel and the postcode
     # This is used for the automatic lock in
-    r = requests.get(PRICE_URL)
+    r = requests.get(PRICE_URL, headers={"user-agent":USER_AGENT})
     response = json.loads(r.text)
     '''
     52 = Unleaded 91
