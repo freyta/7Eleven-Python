@@ -86,7 +86,7 @@ def search_pzt():
     # We need to reiterate that suburb is global.. for some reason
     global suburb
     # Load the ProjectZeroThree API into a JSON list
-    url = requests.get("https://projectzerothree.info/api.php?format=json")
+    url = requests.get("https://projectzerothree.info/api.php?format=json", headers={"user-agent":functions.USER_AGENT})
     # Find the cheapest price
     petrol_station = url.json()['regions'][0]['prices']
     # If the fuel type is U98 then get its suburb
