@@ -73,7 +73,7 @@ if __name__ == '__main__' :
 
         # Get the cheapest fuel, and work out how much fuel we can lock in
         fuel_location = getCheapestFuel(FUEL_TYPE)
-        litres = int(myaccount[3] / fuel_location[1] * 100)
+        litres = int(150)
 
         # Start the lock in session. Here you can confirm the price if you want
         # Note: You need to add the price confirmation yourself.
