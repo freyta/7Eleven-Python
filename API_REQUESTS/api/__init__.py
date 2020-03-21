@@ -25,7 +25,7 @@ import json
 import random
 
 ANDROID_VERSION = "Android 9.0.0"
-APP_VERSION = "1.7.1.2012"
+APP_VERSION = "1.10.0.2044"
 DEVICE_NAME = "OnePlus ONEPLUS A0001"
 BASE_URL = "https://711-goodcall.api.tigerspike.com/api/v1/"
 # Generate a random Device ID
