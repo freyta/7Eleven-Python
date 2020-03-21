@@ -26,23 +26,23 @@
             <div class="form-group">
                 <label for="fueltype">Which fuel do you want?</label>
                 <select id="fueltype" name="fueltype" class="custom-select">
-                  <option id="57" value="57">E10</option>
-                  <option id="52" value="52">Unleaded</option>
+                  <option id="57" value="57">Special E10</option>
+                  <option id="52" value="52">Special Unleaded</option>
                   <option id="55" value="55">Extra 95</option>
-                  <option id="56" value="56">Supreme 98</option>
-                  <option id="53" value="53">Diesel</option>
-                  <option id="54" value="54">LPG</option>
+                  <option id="56" value="56">Supreme+ 98</option>
+                  <option id="53" value="53">Special Diesel</option>
+                  <option id="54" value="54">Autogas</option>
 
                 </select>
                 <button class="btn btn-default" name="submit" value="automatic" type="submit" onclick="loader.style.display = 'block'">Lock it in!</button>
             </div>
         </form>
-        <h5 id="57"> E10 cheapest price found was <strong class='bold_balance'>{{ session['price0'] }}</strong> at <strong class='bold_balance'>{{ session['postcode0'] }}</strong></h5>
-        <h5 id="52"> U91 cheapest price found was <strong class='bold_balance'>{{ session['price1'] }}</strong> at <strong class='bold_balance'>{{ session['postcode1'] }}</strong></h5>
-        <h5 id="55"> U95 cheapest price found was <strong class='bold_balance'>{{ session['price2'] }}</strong> at <strong class='bold_balance'>{{ session['postcode2'] }}</strong></h5>
-        <h5 id="56"> U98 cheapest price found was <strong class='bold_balance'>{{ session['price3'] }}</strong> at <strong class='bold_balance'>{{ session['postcode3'] }}</strong></h5>
-        <h5 id="53"> Diesel cheapest price found was <strong class='bold_balance'>{{ session['price4'] }}</strong> at <strong class='bold_balance'>{{ session['postcode4'] }}</strong></h5>
-        <h5 id="54"> LPG cheapest price found was <strong class='bold_balance'>{{ session['price5'] }}</strong> at <strong class='bold_balance'>{{ session['postcode5'] }}</strong></h5>
+        <h5 id="57"> Special E10 cheapest price found was <strong class='bold_balance'>{{ session['price0'] }}</strong> at <strong class='bold_balance'>{{ session['postcode0'] }}</strong></h5>
+        <h5 id="52"> Special Unleaded cheapest price found was <strong class='bold_balance'>{{ session['price1'] }}</strong> at <strong class='bold_balance'>{{ session['postcode1'] }}</strong></h5>
+        <h5 id="55"> Extra 95 cheapest price found was <strong class='bold_balance'>{{ session['price2'] }}</strong> at <strong class='bold_balance'>{{ session['postcode2'] }}</strong></h5>
+        <h5 id="56"> Supreme+ 98 cheapest price found was <strong class='bold_balance'>{{ session['price3'] }}</strong> at <strong class='bold_balance'>{{ session['postcode3'] }}</strong></h5>
+        <h5 id="53"> Special Diesel cheapest price found was <strong class='bold_balance'>{{ session['price4'] }}</strong> at <strong class='bold_balance'>{{ session['postcode4'] }}</strong></h5>
+        <h5 id="54"> Autogas cheapest price found was <strong class='bold_balance'>{{ session['price5'] }}</strong> at <strong class='bold_balance'>{{ session['postcode5'] }}</strong></h5>
     </div>
     <div id="manual">
         <form class="form-inline mt-2 mt-md-0" action="/lockin" method="POST">
@@ -50,12 +50,12 @@
             <div class="form-group">
                 <label for="fueltype">Which fuel do you want?</label>
                 <select id="manualfueltype" name="fueltype" class="custom-select">
-                  <option value="57">E10</option>
-                  <option value="52">Unleaded</option>
+                  <option value="57">Special E10</option>
+                  <option value="52">Special Unleaded</option>
                   <option value="55">Extra 95</option>
-                  <option value="56">Supreme 98</option>
-                  <option value="53">Diesel</option>
-                  <option value="54">LPG</option>
+                  <option value="56">Supreme+ 98</option>
+                  <option value="53">Special Diesel</option>
+                  <option value="54">Autogas</option>
 
                 </select><br>
                 Postcode of the fuel: <input class="form-control mr-sm-2" type="text" placeholder="3150" name="postcode"><br><br>
