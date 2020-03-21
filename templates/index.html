@@ -51,8 +51,44 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	});
 </script>
 
+<script>
+  var balance = {{ session['cardBalance'] }};
+  if (balance > 0) {
+  alert("As of March 2020 you no longer require balance on your account to lock in fuel. Feel free to use up your balance when filling up, or in-store.");
+  }
+</script>
+	
+<script>
+var lookupTable = {
+  52: function() {
+    return "Special Unleaded";
+  },
+  53: function() {
+    return "Special Diesel";
+  },
+  54: function() {
+    return "Autogas";
+  },
+  55: function() {
+    return "Extra 95";
+  },
+  56: function() {
+    return "Supreme+ 98";
+  },
+  57: function() {
+    return "Special E10";
+  }
+};
+
+var fueltype = lookupTable[{{ session['fuelLockType'] }}]()
+
+function convertfueltype() {
+document.getElementById("fueltypeconverted").innerHTML = fueltype;
+}
+</script>
+	
 </head>
-<body>
+<body onload="convertfueltype();">
 <!-- main -->
 <div class="audio-main w3ls">
 	<h1>7Eleven Fuel Locker</h1>
@@ -69,20 +105,19 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                              <h3>Your current account balance is: <strong class='bold_balance'>${{ session['cardBalance'] }}.</strong></h3>
 														 {% if session['fuelLockActive'][0] %}
                              <br><h4 class='bold_balance'>Current fuel lock:</h4>
-                             <h3>Fuel lock expires: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
-                             <h3>You have <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres locked in.</h3>
-                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+                             <br><h3><strong class='bold_balance'>Expires</strong>: {{ session['fuelLockExpiry'] }}</h3>
+			     <br><h3>You have <strong class='bold_balance'>150</strong> litres of <strong class='bold_balance'><span id="fueltypeconverted"></span></strong> locked in at <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
 														 {% endif %}
 														 {% if session['fuelLockActive'][1] %}
                              <br><h4 class='bold_balance'>Previous fuel lock:</h4>
                              <h3>Fuel lock expired: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
-                             <h3>Could have locked: <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres.</h3>
+                             <h3>Could have locked: <strong class='bold_balance'><span id="fueltypeconverted"></span></strong> litres.</h3>
                              <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
 														 {% endif %}
 														 {% if session['fuelLockActive'][2] %}
                              <br><h4 class='bold_balance'>Previous fuel lock:</h4>
                              <h3>Redeemed: <strong class='bold_balance'>{{ session['fuelLockRedeemed'] }}</strong></h3>
-                             <h3>You locked in <strong class='bold_balance'>{{ session['fuelLockLitres'] }}</strong> litres.</h3>
+                             <h3>You locked in <strong class='bold_balance'><span id="fueltypeconverted"></span></strong> litres.</h3>
                              <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
 														 {% endif %}
                          </div>
@@ -94,7 +129,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                          <div class="pic_info">
                              <h2>Please enter your email and password below:<br><br></h2>
 														 <form class="form-inline mt-2 mt-md-0" action="/login" method="POST">
-															 <input class="form-control mr-sm-2" type="username" placeholder="Email" name="email"><br><br>
+															 <input class="form-control mr-sm-2" type="text" placeholder="Email" name="email"><br><br>
 															 <input class="form-control mr-sm-2" type="password" placeholder="Password"  name="password"><br><br>
 															 <input class="form-control mr-sm-2" type="text" placeholder="Device ID (can be blank)" value="{{ device_id }}" maxlength="16"  name="device_id"><br><br>
 															 <label><input type="checkbox" name="auto_lockin"> Enable auto lock in</label><br><br>
