@@ -40,7 +40,7 @@ def create_ini():
                          'fuel_lock_saved': 'False'}
     config.write(open("autolock.ini","w"))
     print("autolock.ini wasn't found, so it was created.")
-    
+
 # A function to search the (new) deals page to see if there is a post about 7-Eleven fuel prices
 def search_ozbargain():
     # We need to reiterate that suburb is global.. for some reason
@@ -133,6 +133,7 @@ def start_lockin():
     config.read("./autolock.ini")
     # Get the setting if auto_lock is true or false
     auto_lock_enabled = config['General'].getboolean('auto_lock_enabled')
+    wanted_fuel_type = config['General'].getboolean('auto_lock_fuel_type')
     # Get the maximum price we want to pay for fuel
     max_price = config['General']['max_price']
     # Get our account details
@@ -202,8 +203,8 @@ def start_lockin():
                 for each in returnContent['CheapestFuelTypeStores']:
                     x = each['FuelPrices']
                     for i in x:
-                        # If the fuel type is premium 98
-                        if(i['Ean'] == 56):
+                        # If the fuel type is the one we are after
+                        if(i['Ean'] == str(wanted_fuel_type)):
                             # Save the fuel pump price
                             pump_price = i['Price']
 
@@ -215,7 +216,7 @@ def start_lockin():
                     NumberOfLitres = int(float(config['Account']['cardbalance']) / pump_price * 100)
 
                     # Lets start the actual lock in process
-                    payload = '{"AccountId":"' + config['Account']['account_id'] + '","FuelType":"56","NumberOfLitres":"' + str(NumberOfLitres) + '"}'
+                    payload = '{"AccountId":"' + config['Account']['account_id'] + '","FuelType":' + str(wanted_fuel_type) + ',"NumberOfLitres":"' + str(NumberOfLitres) + '"}'
 
                     tssa = functions.generateTssa(functions.BASE_URL + "FuelLock/Confirm", "POST", payload, accessToken)
 

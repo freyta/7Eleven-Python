@@ -36,23 +36,26 @@ def login(email, password):
     returnHeaders = response.headers
     returnContent = response.text
 
-    accessToken = str(returnHeaders).split("'X-AccessToken': '")
-    accessToken = accessToken[1].split("'")
-    accessToken = accessToken[0]
-
-
     returnContent = json.loads(returnContent)
-    deviceSecret = returnContent['DeviceSecretToken']
-    accountID = returnContent['AccountId']
-    accountBalance = returnContent['DigitalCard']['Balance']
-    # These 3 variables are used for the basis of multiple requests, so it is a good idea to store them in
-    # a variable when you call them (i.e. myaccount = account.login("email", "password"))
-    #
-    # deviceSecret and accessToken are used for every request where you need to be logged in.
-    # accountID is used for locking in a fuel price.
-    # accountBalance is useful to figure out how much fuel we can lock in
-    return deviceSecret, accessToken, accountID, accountBalance
+    try:
+        deviceSecret = returnContent['DeviceSecretToken']
+        accountID = returnContent['AccountId']
+        accountBalance = returnContent['DigitalCard']['Balance']
 
+        accessToken = str(returnHeaders).split("'X-AccessToken': '")
+        accessToken = accessToken[1].split("'")
+        accessToken = accessToken[0]
+
+        # These 3 variables are used for the basis of multiple requests, so it is a good idea to store them in
+        # a variable when you call them (i.e. myaccount = account.login("email", "password"))
+        #
+        # deviceSecret and accessToken are used for every request where you need to be logged in.
+        # accountID is used for locking in a fuel price.
+        # accountBalance is useful to figure out how much fuel we can lock in
+        return deviceSecret, accessToken, accountID, accountBalance
+    except:
+        # If the username and password is wrong, return the message
+        return returnContent['Message']
 
 def logout(deviceSecret, accessToken):
 

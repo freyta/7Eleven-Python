@@ -7,7 +7,16 @@
         <form class="form-inline mt-2 mt-md-0" action="/save_settings" method="POST">
             <h6 style="font-style: italic; margin-bottom: 2ch;">These settings are for the automatic fuel lock function. Proceed with caution, you will not be warned when a fuel lock is found.</h6>
             <div class="form-group">
-                <label for="fueltype">What is the maximum you want to pay for Premium 98? </label><br><br>
+                <label for="fueltype">Select a fuel type you wish to auto lock in and the maximum price</label><br><br>
+                <select id="fueltype" name="fueltype" class="custom-select">
+                  <option id="57" value="57">Special E10</option>
+                  <option id="52" value="52">Special Unleaded</option>
+                  <option id="55" value="55">Extra 95</option>
+                  <option id="56" value="56">Supreme+ 98</option>
+                  <option id="53" value="53">Special Diesel</option>
+                  <option id="54" value="54">Autogas</option>
+
+                </select><br>
                 <input class="form-control mr-sm-2" type="text" placeholder="{{ session['max_price'] }}" name="max_price"><br>
                 {% if session['auto_lock'] %}
                 <label>  <input type="checkbox" name="auto_lockin" checked> Enable auto lock in</label><br><br>

@@ -247,21 +247,20 @@ def save_settings():
         # If we want to auto lock in, set it to true
         if(request.form.getlist('auto_lockin')):
             config.set('General', 'auto_lock_enabled', "True")
+            config.set('General', 'auto_lock_fuel_type', request.form['fueltype'])
             session['auto_lock'] = True
 
-            # Set the max price to what the user wants as long as it's above 1 dollar and below 2 dollars
-            # Note: Minimum price is $1 to try and avoid any 'honeypot stings' where premium unleaded
-            # is obviously too cheap for us to lock in.
-            if (float(request.form['max_price']) > 100 and float(request.form['max_price']) < 200):
+            # Set the max price to what the user wants as long as it's above 80  and below 2 dollars
+            if (float(request.form['max_price']) > 80 and float(request.form['max_price']) < 200):
                 config.set('General', 'max_price', request.form['max_price'])
             else:
-                session['ErrorMessage'] = "The price you tried to lock in was either too cheap or too expensive. It should be between 100 and 200cents"
+                session['ErrorMessage'] = "The price you tried to lock in was either too cheap or too expensive. It should be between 80 cents and 2 dollars"
                 return redirect(url_for('index'))
 
         else:
             config.set('General', 'auto_lock_enabled', "False")
-            session['auto_lock'] = False            
-            
+            session['auto_lock'] = False
+
 
         # Save the config file
         with open('./autolock.ini', 'w') as configfile:
@@ -478,7 +477,7 @@ if __name__ == '__main__':
     # Check if the autolock.ini file exists, if it doesn't create it.
     if not (os.path.exists("./autolock.ini")):
         autolocker.create_ini()
-        
+
     # Open the config file and read the settings
     config = configparser.ConfigParser()
     config.read("./autolock.ini")
