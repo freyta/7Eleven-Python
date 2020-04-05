@@ -137,8 +137,8 @@ def newAccountRegistration(dobTimestamp, email, firstName, password, phoneNumber
 
 def verifyAccount(VerificationCode):
 
-    payload = '{"VerificationCode":"' + VerificationCode + '","DeviceName"' + DEVICE_NAME + '","DeviceOsNameVersion":"' + ANDROID_VERSION + '"}'
-    tssa = generateTssa(BASE_URL + "account/register", "POST", payload)
+    payload = '{"VerificationCode":"' + VerificationCode + '","DeviceName":"' + DEVICE_NAME + '","DeviceOsNameVersion":"' + ANDROID_VERSION + '"}'
+    tssa = generateTssa(BASE_URL + "account/verify", "POST", payload)
 
     headers = {'User-Agent':'Apache-HttpClient/UNAVAILABLE (java 1.4)',
                'Connection':'Keep-Alive',
@@ -150,7 +150,7 @@ def verifyAccount(VerificationCode):
                'X-AppVersion':APP_VERSION,
                'Content-Type':'application/json; charset=utf-8'}
 
-    response = requests.post(BASE_URL + "account/register", data=payload, headers=headers)
+    response = requests.post(BASE_URL + "account/verify", data=payload, headers=headers)
 
     return(response.content)
 
