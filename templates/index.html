@@ -50,13 +50,6 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		 });
 	});
 </script>
-
-<script>
-  var balance = {{ session['cardBalance'] }};
-  if (balance > 0) {
-  alert("As of March 2020 you no longer require balance on your account to lock in fuel. Feel free to use up your balance when filling up, or in-store.");
-  }
-</script>
 	
 <script>
 var lookupTable = {
@@ -103,6 +96,13 @@ document.getElementById("fueltypeconverted").innerHTML = fueltype;
                          <div class="pic_info">
                              <h2>Welcome, {{ session['firstName'] }}.</h2>
                              <h3>Your current account balance is: <strong class='bold_balance'>${{ session['cardBalance'] }}.</strong></h3>
+
+                            {% if session['cardBalance'] | float > 0 %}
+                                <div class="card-balance-warning">
+                                    As of March 2020 you no longer require balance on your account to lock in fuel. Feel free to use up your balance when filling up, or in-store.
+                                </div>
+                            {% endif %}
+
 														 {% if session['fuelLockActive'][0] %}
                              <br><h4 class='bold_balance'>Current fuel lock:</h4>
                              <br><h3><strong class='bold_balance'>Expires</strong>: {{ session['fuelLockExpiry'] }}</h3>
