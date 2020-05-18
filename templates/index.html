@@ -49,9 +49,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	       $("#buttonpressed").fadeIn("fast");
 		 });
 	});
-</script>
-	
-<script>
+  
 var lookupTable = {
   52: function() {
     return "Special Unleaded";
@@ -79,7 +77,7 @@ function convertfueltype() {
 document.getElementById("fueltypeconverted").innerHTML = fueltype;
 }
 </script>
-	
+
 </head>
 <body onload="convertfueltype();">
 <!-- main -->
@@ -105,20 +103,18 @@ document.getElementById("fueltypeconverted").innerHTML = fueltype;
 
 														 {% if session['fuelLockActive'][0] %}
                              <br><h4 class='bold_balance'>Current fuel lock:</h4>
-                             <br><h3><strong class='bold_balance'>Expires</strong>: {{ session['fuelLockExpiry'] }}</h3>
-			     <br><h3>You have <strong class='bold_balance'>150</strong> litres of <strong class='bold_balance'><span id="fueltypeconverted"></span></strong> locked in at <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+                             <br><h3>Expires: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
+			     <br><h3>You have <strong class='bold_balance'>150</strong> litres of <strong class='bold_balance'><span id="fueltypeconverted"></span></strong> locked in at <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong> c/L.</h3>
 														 {% endif %}
 														 {% if session['fuelLockActive'][1] %}
                              <br><h4 class='bold_balance'>Previous fuel lock:</h4>
-                             <h3>Fuel lock expired: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
-                             <h3>Could have locked: <strong class='bold_balance'><span id="fueltypeconverted"></span></strong> litres.</h3>
-                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+                             <h3>Expired: <strong class='bold_balance'>{{ session['fuelLockExpiry'] }}</strong></h3>
+                             <h3>You could have purchased up to <strong class='bold_balance'>150</strong> litres at <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong> c/L.</h3>
 														 {% endif %}
 														 {% if session['fuelLockActive'][2] %}
                              <br><h4 class='bold_balance'>Previous fuel lock:</h4>
                              <h3>Redeemed: <strong class='bold_balance'>{{ session['fuelLockRedeemed'] }}</strong></h3>
-                             <h3>You locked in <strong class='bold_balance'><span id="fueltypeconverted"></span></strong> litres.</h3>
-                             <h3>Cents per litre: <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong></h3>
+                             <h3>You purchased up to <strong class='bold_balance'>150</strong> litres at <strong class='bold_balance'>{{ session['fuelLockCPL'] }}</strong> c/L.</h3>
 														 {% endif %}
                          </div>
                          <div class="clear"></div>
