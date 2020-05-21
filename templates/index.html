@@ -27,30 +27,44 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 				$("#manual").hide();
 				$("#settings").hide();
 				$("#buttonpressed").hide();
+				$("#credits").hide();
 	      $("#automatic").fadeIn("fast");
 	   });
 	   $("#aman").click(function(event){
 	       $("#automatic").hide();
 				 $("#settings").hide();
 				 $("#buttonpressed").hide();
+				 $("#credits").hide();
 	       $("#manual").fadeIn("fast");
 	   });
 	   $("#aset").click(function(event){
 	       $("#automatic").hide();
 				 $("#manual").hide();
 				 $("#buttonpressed").hide();
+				 $("#credits").hide();
 	       $("#settings").fadeIn("fast");
+	   });
+	   $("#acredits").click(function(event){
+	       $("#automatic").hide();
+				 $("#manual").hide();
+				 $("#buttonpressed").hide();
+				 $("#settings").hide();
+	       $("#credits").fadeIn("fast");
 	   });
 		 $(".btn").click(function(event){
 	       $("#automatic").hide();
 			   $("#manual").hide();
 			   $("#settings").hide();
+			   $("#credits").hide();
 			   $(".automanual").hide();
 	       $("#buttonpressed").fadeIn("fast");
 		 });
 	});
-  
+
 var lookupTable = {
+	0: function() {
+		return "No fuel type";
+	},
   52: function() {
     return "Special Unleaded";
   },
@@ -71,7 +85,7 @@ var lookupTable = {
   }
 };
 
-var fueltype = lookupTable[{{ session['fuelLockType'] }}]()
+var fueltype = lookupTable[{% if session['fuelLockType'] %} {{ session['fuelLockType'] }} {% else %} 0 {% endif%}]()
 
 function convertfueltype() {
 document.getElementById("fueltypeconverted").innerHTML = fueltype;

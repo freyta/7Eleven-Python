@@ -79,6 +79,10 @@ hr{
 	margin-top: 0px;
 	top: 0px;
 }
+#credits{
+	margin-top: 0px;
+	top: 0px;
+}
 #buttonpressed{
 	display: none;
 	margin-top: 0px;
@@ -86,6 +90,10 @@ hr{
 }
 .bold_balance{
   font-weight: bold;
+}
+.username_link{
+  font-weight: bold;
+  color: lightgrey;
 }
 .not_found{
     padding: 1em;

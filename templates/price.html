@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block content %}
 {% if session['fuelLockActive'][0] %}
-    <div class="automanual" align="center"><a id="aset" href="#">Settings</a><hr></div>
+    <div class="automanual" align="center"><a id="aset" href="#">Settings</a> | <a id="acredits" href="#">Credits</a><hr></div>
 
       <div id="settings">
         <form class="form-inline mt-2 mt-md-0" action="/save_settings" method="POST">
@@ -29,7 +29,7 @@
       </div>
 
     {% else %}
-    <div class="automanual" align="center"><a id="aauto" href="#">Automatic</a> | <a id="aman" href="#">Manual</a> | <a id="aset" href="#">Settings</a><hr></div>
+    <div class="automanual" align="center"><a id="aauto" href="#">Automatic</a> | <a id="aman" href="#">Manual</a> | <a id="aset" href="#">Settings</a> | <a id="acredits" href="#">Credits</a><hr></div>
     <div id="automatic">
         <form class="form-inline mt-2 mt-md-0"  action="/lockin" method="POST">
             <div class="form-group">
@@ -87,10 +87,30 @@
           </div>
       </form>
     </div>
+
+    <div id="credits">
+      <h6 style="margin-bottom: 2ch;">This project was initially created by <a href="https://github.com/freyta/7Eleven-Python" class="username_link">Freyta</a>, but it takes a few people to maintain/update the code, so I would like to thank the following people as well (in alphabetical order):</h6>
+      <h5>- <a href="https://www.github.com/andyrb412" class="username_link">andyrb412</a><br>
+      - <a href="https://www.github.com/charleszlu" class="username_link">charleszlu</a><br>
+      - <a href="https://www.github.com/clamburger" class="username_link">clamburger</a><br>
+      - <a href="https://www.github.com/cliveli" class="username_link">cliveli</a><br>
+      - <a href="https://www.github.com/deeevan" class="username_link">deeevan</a><br>
+      - <a href="https://www.github.com/drushbrook" class="username_link">drushbrook</a><br>
+      - <a href="https://www.github.com/ethan-ho" class="username_link">ethan-ho</a><br>
+      - <a href="https://www.github.com/ingenieurmt" class="username_link">ingenieurmt</a><br>
+      - <a href="https://www.github.com/Motordom" class="username_link">Motordom</a><br>
+      - <a href="https://www.github.com/NGPriest" class="username_link">NGPriest</a><br>
+      - <a href="https://www.github.com/PinkyJie" class="username_link">PinkyJie</a><br>
+      - <a href="https://www.github.com/TylerDurden2019" class="username_link">TylerDurden2019</a><br>
+      - <a href="https://www.github.com/vitorll" class="username_link">vitorll</a></h5>
+    </div>
     <div id="buttonpressed">
         <h2 align="center">Hold on tight!</h2>
         <h3 align="center">I am currently attempting to lock in your fuel price. This may take a minute or so...</h3>
     </div>
-
+    <div align="center"><hr>
+        <h5 align="center">If you have any suggestions or additions you wish to submit, please <a href="https://github.com/freyta/7Eleven-Python/pulls">make a pull request</a>.<br>
+          If you encounter a problem or have an issue feel free to <a href="https://github.com/freyta/7Eleven-Python/issues">submit an issue</a>.</h5>
+    </div>
   {% endif %}
 {% endblock %}
